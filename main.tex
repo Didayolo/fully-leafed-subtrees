@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Prise de notes au Lacim}
+\author{Adrien Pavao}
+\date{Juin 2017}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\section{Problèmes à étudier}
+
+\subsection{Conjecture 4/3} 
+
+Les sous-mots antipalindromiques.
+
+Résumé de la conjecture
+
+\textbf{Antipalindrome}
+Qu'est-ce qu'un antipalindrome
+
+Ref: http://ojs.statsbiblioteket.dk/index.php/brics/article/download/20073/17699
+Ref: https://cermics.enpc.fr/~meuniefr/OpenProblems.html
+
+\subsection{Codes couvrants} 
+
+(les antennes et les téléphones)
+Résumé du problème
+
+Ils ont déjà été étudiés dans les grilles carrées, hexagonales et triangulaires, mais pas encore dans la grille du roi.
+ 
+\subsubseciogrille carrée
+
+Ref: http://www.sciencedirect.com/science/article/pii/S0012365X02007446
+%http://www.discuss.wmie.uz.zgora.pl/php/discuss3.php?ip=&url=bwww_praca&nId=2454&nIdCzasopisma=402&nIdSesji=-1
+%http://math.nsc.ru/~puzynina/3_pc3.ps
+% - dans d'autres grilles
+%http://link.springer.com/article/10.1134/S0037446606010101
+
+\subsection{Sous-arbres induits}
+
+La question est "Quel est le nombre maximal de feuilles réalisé par un sous-arbre induit à n sommets dans un graphe donné?"
+%Le document en pièce jointe contient un résultat de complexité et algorithme polynomial pour les arbres.
+\\
+Peut-on obtenir un algorithme polynomial pour les graphes de largeur arborescente fixée ?
+%document piece jointe fully tanani
+
+Quelques définitions :
+
+\begin{itemize}
+\item \textbf{Arbre}
+Un arbre est un graphe non orienté dans lequel deux sommets quelconques sont reliés par un unique chemin (acyclique). Une feuille est un sommet de degré 1 dans un arbre.
+
+\item \textbf{Largeur arborescente}
+La largeur d'arbre est une façon de savoir si, intuitivement un graphe est proche d'un arbre.
+
+\item \textbf{Sous-arbre induit}
+Un sous-graphe induit est un sous-graphe défini par un sous ensemble de sommets. 
+\\
+Formellement, H est un sous-graphe induit de G si, pour tout couple (x, y) de sommets de H, x est connecté à y dans H si et seulement si x est connecté à y dans G. Autre formulation de la condition : l'ensemble des arêtes de H correspond à l'ensemble des arêtes de G incidentes à deux sommets de H.
+\\
+Vulgairement, on choisit les sommets du sous-graphe et on met les arêtes telles qu'elles étaient dans le graphe d'origine, sauf celles à qui il manque un sommet bien-sûr. 
+\\
+Un sous-arbre induit est un sous-graphe induit qui est un arbre.
+
+\item \textbf{Spanning tree}
+Un spanning tree d'un graphe à n sommets est un sous-ensemble de n-1 arrêtes qui forme un arbre.
+
+\item \textbf{Leaf number}
+Nombre maximal de feuilles d'un spanning tree d'un graphe.
+
+\end{itemize}
+
+Traduction du problème dans un SAT solver ?
+Etudier graphes avec Sage ?
+%Complexité et largeur arborescente
+
+% polyminoes
+% document piece jointe iwoca
+
+\end{document}
+
