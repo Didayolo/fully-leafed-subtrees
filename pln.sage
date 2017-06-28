@@ -2,9 +2,9 @@
 
 # arbre a n sommets
 
-n = 3 # taille de l'arbre
-k = 2 # taille du sous-arbre
-a = 2 # nombre d'arete
+n = 5 # taille de l'arbre
+k = 4 # taille du sous-arbre
+a = 4 # nombre d'arete
 
 p = MixedIntegerLinearProgram()
 
@@ -26,6 +26,8 @@ p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbr
 
 p.add_constraint(x[0] <= (y[0] + y[1])/2)  # presence d'une arete
 p.add_constraint(x[1] <= (y[1] + y[2])/2)  # on decrit chaque arete a la main
+p.add_constraint(x[2] <= (y[1] + y[3])/2)  # presence d'une arete
+p.add_constraint(x[3] <= (y[3] + y[4])/2)  # presence d'une arete
 
 p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[j] for j in range(a)) + 1)  # arbre, connexe
 
