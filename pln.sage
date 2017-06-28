@@ -1,4 +1,4 @@
-# programme lineaine sage
+# programme lineaire sage
 
 # arbre a n sommets
 
@@ -9,7 +9,7 @@ a = 4 # nombre d'arete
 p = MixedIntegerLinearProgram()
 
 # aretes
-# peut etre faire [0, 1]
+# il faudrait faire [0, 1]
 for i in range(a):
     x = p.new_variable(binary = True)
 
@@ -26,14 +26,14 @@ p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbr
 
 p.add_constraint(x[0] <= (y[0] + y[1])/2)  # presence d'une arete
 p.add_constraint(x[1] <= (y[1] + y[2])/2)  # on decrit chaque arete a la main
-p.add_constraint(x[2] <= (y[1] + y[3])/2)  # presence d'une arete
-p.add_constraint(x[3] <= (y[3] + y[4])/2)  # presence d'une arete
+p.add_constraint(x[2] <= (y[1] + y[3])/2)  # necessite (i,j)
+p.add_constraint(x[3] <= (y[3] + y[4])/2)  
 
 p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[j] for j in range(a)) + 1)  # arbre, connexe
 
 for i in range(n):
         p.add_constraint(f[i] <= 2 - (p.sum(x[j] for j in range(a))) )  # contraintes sur les feuilles
-        p.add_constraint(f[i] <= 1 + (p.sum(x[j] for j in range(a))) )
+        p.add_constraint(f[i] <= 1 + (p.sum(x[j] for j in range(a))) )  # necessite d'associer aretes et sommets
         p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
         # contraintes utiles ou redondantes ?
 
