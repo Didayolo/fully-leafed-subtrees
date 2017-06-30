@@ -1,24 +1,22 @@
 # programme lineaire sage
 
-# On se place dans le cas particulier dans lequel le graphe 
-# est un arbre a n sommets, et on cherche parmis les sous-arbre 
-# de taille k celui qui a le plus de feuilles
+# On a un graphe a n sommets, et on cherche parmis les 
+# sous-arbre induits de taille k celui qui a le plus de feuilles
 
 # on veux generer le programme lineaire a partir d'un graphe
 
 # declaration du graphe
 g = Graph()
-
 # exemple 1
 #g.add_vertices([0,1,2])
 #g.add_edges([(0,1), (1,2)])
 
 # exemple 2
-g.add_vertices([0, 1, 2, 3, 4])
-g.add_edges([(0, 1), (1, 2), (1, 3), (3, 4)])
+# g.add_vertices([0, 1, 2, 3, 4])
+# g.add_edges([(0, 1), (1, 2), (1, 3), (3, 4)])
 
 # exemple 3
-# g = graphs.PetersenGraph() # /!\ Pas un arbre
+g = graphs.PetersenGraph() # /!\ Pas un arbre
 
 g.show()
 
@@ -28,7 +26,7 @@ for e in g.edges():
 
 n = g.order() # taille de l'arbre
 a = g.size() # nombre d'arete
-k = 4 # taille du sous-arbre (arbitraire)
+k = 6 # taille du sous-arbre (arbitraire)
 
 m = n - 1 # borne sup du degre max du graphe (a paufiner) 
 
