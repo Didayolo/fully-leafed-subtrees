@@ -8,41 +8,50 @@
 
 # declaration du graphe
 g = Graph()
+# exemple 1
+#g.add_vertices([0,1,2])
+#g.add_edges([(0,1), (1,2)])
+
+# exemple 2
 g.add_vertices([0, 1, 2, 3, 4])
 g.add_edges([(0, 1), (1, 2), (1, 3), (3, 4)])
+
 g.show()
+
+edges = [] # liste de couple, a voir si utile
+for e in g.edges():
+    edges.append((e[0], e[1]))
 
 n = g.order() # taille de l'arbre
 a = g.size() # nombre d'arete
-k = 4 # taille du sous-arbre (arbitraire)
+k = 2 # taille du sous-arbre (arbitraire)
 
 p = MixedIntegerLinearProgram()
 
-# aretes, sommets et feuilles
-x = p.new_variable(binary = True)
-y = p.new_variable(binary = True)
-f = p.new_variable(integer = True, nonnegative = False)
+# variables du PL
+x = p.new_variable(binary = True) # aretes
+y = p.new_variable(binary = True) # sommets
+f = p.new_variable(integer = True, nonnegative = False) # feuilles
 
-# objectif
-p.set_objective(p.sum(f[i] for i in range(n)) + p.sum(x[i,j] for i in range(n) for j in range(n)) )
+# fonction objectif
+p.set_objective(p.sum(f[i] for i in range(n)) + p.sum(x[e] for e in edges) )
 
 # contraintes
 p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre 
+p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[e] for e in edges) + 1)  # arbre connexe (m = n + 1)
 
 # contraintes aretes (generer)
-for edge in g.edges():
-    edge[0], edge[1]
-    p.add_constraint(x[edge[0], edge[1]] <= (y[edge[0]] + y[edge[1]])/2)  # presence d'une arete
-    # c'est ici qu'il y a un probleme
+for e in edges:
+    p.add_constraint(x[e[0], e[1]] <= (y[e[0]] + y[e[1]])/2)  # presence d'une arete
+    # c'est ici qu'il y a un probleme ?
 
-p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[i,j] for i in range(n) for j in range(n)) + 1)  # arbre, connexe
-
-for i in range(n):
-        p.add_constraint(f[i] <= 2 - (p.sum(x[i,j] for j in range(n))) )  # contraintes sur les feuilles
-        p.add_constraint(f[i] <= 1 + (p.sum(x[i,j] for j in range(n))) )  # necessite d'associer aretes et sommets
-        p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
-        # contraintes utiles ou redondantes ?
-        p.add_constraint(x[i,i] == 0) # pas d'arete vers sois-meme
+for i in range(n): # parcours des sommets pour determiner les feuilles
+    # contraintes utiles ou redondantes ?
+    p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
+    p.add_constraint(x[i,i] == 0) # pas d'arete vers sois-meme
+    for e in edges: 
+        p.add_constraint(f[i] <= 2 - (p.sum(x[i,j] for j in e)) )  # contraintes sur les feuilles
+        p.add_constraint(f[i] <= 1 + (p.sum(x[i,j] for j in e)) )  # necessite d'associer aretes et sommets
 
 # resolution
 print("Solve")
