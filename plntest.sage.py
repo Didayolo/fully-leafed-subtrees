@@ -4,7 +4,17 @@ from sage.all_cmdline import *   # import sage library
 
 _sage_const_3 = Integer(3); _sage_const_2 = Integer(2); _sage_const_1 = Integer(1); _sage_const_0 = Integer(0); _sage_const_5 = Integer(5); _sage_const_4 = Integer(4)# programme lineaire sage
 
-# arbre a n sommets
+# On se place dans le cas particulier dans lequel le graphe 
+# est un arbre a n sommets, et on cherche parmis les sous-arbre 
+# de taille k celui qui a le plus de feuilles
+
+# on veux generer le programme lineaire a partir d'un graphe
+
+g = Graph()
+g.add_vertices([_sage_const_0 , _sage_const_1 , _sage_const_2 , _sage_const_3 , _sage_const_4 ])
+g.add_edges([(_sage_const_0 , _sage_const_1 ), (_sage_const_1 , _sage_const_2 ), (_sage_const_1 , _sage_const_3 ), (_sage_const_3 , _sage_const_4 )])
+p = g.plot()
+p.show()
 
 n = _sage_const_5  # taille de l'arbre
 k = _sage_const_4  # taille du sous-arbre

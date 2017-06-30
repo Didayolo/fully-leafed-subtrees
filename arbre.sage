@@ -1,10 +1,20 @@
 # programme lineaire sage
 
-# arbre a n sommets
+# On se place dans le cas particulier dans lequel le graphe 
+# est un arbre a n sommets, et on cherche parmis les sous-arbre 
+# de taille k celui qui a le plus de feuilles
 
-n = 5 # taille de l'arbre
-k = 4 # taille du sous-arbre
-a = 4 # nombre d'arete
+# on veux generer le programme lineaire a partir d'un graphe
+
+# declaration du graphe
+g = Graph()
+g.add_vertices([0, 1, 2, 3, 4])
+g.add_edges([(0, 1), (1, 2), (1, 3), (3, 4)])
+g.show()
+
+n = g.order() # taille de l'arbre
+a = g.size() # nombre d'arete
+k = 4 # taille du sous-arbre (arbitraire)
 
 p = MixedIntegerLinearProgram()
 
@@ -19,12 +29,11 @@ p.set_objective(p.sum(f[i] for i in range(n)) + p.sum(x[i,j] for i in range(n) f
 # contraintes
 p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre 
 
-# contraintes aretes (a generer)
-p.add_constraint(x[0,1] <= (y[0] + y[1])/2)  # presence d'une arete
-p.add_constraint(x[1,2] <= (y[1] + y[2])/2)  # on decrit chaque arete a la main
-p.add_constraint(x[1,3] <= (y[1] + y[3])/2)  # necessite (i,j)
-p.add_constraint(x[3,4] <= (y[3] + y[4])/2)  
-p.add_constraint(x[4,3] <= (y[3] + y[4])/2)  # le symetrique ?
+# contraintes aretes (generer)
+for edge in g.edges():
+    edge[0], edge[1]
+    p.add_constraint(x[edge[0], edge[1]] <= (y[edge[0]] + y[edge[1]])/2)  # presence d'une arete
+    # c'est ici qu'il y a un probleme
 
 p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[i,j] for i in range(n) for j in range(n)) + 1)  # arbre, connexe
 
