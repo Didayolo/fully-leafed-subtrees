@@ -14,11 +14,14 @@ g = Graph()
 #g.add_edges([(0,1), (1,2)])
 
 # exemple 2
-g.add_vertices([0, 1, 2, 3, 4])
-g.add_edges([(0, 1), (1, 2), (1, 3), (3, 4)])
+#g.add_vertices([0, 1, 2, 3, 4])
+#g.add_edges([(0, 1), (1, 2), (1, 3), (3, 4)])
 
 # exemple 3
 # g = graphs.PetersenGraph() # /!\ Pas un arbre
+
+# exemple 4
+g = graphs.FibonacciTree(7)
 
 g.show()
 
@@ -28,7 +31,7 @@ for e in g.edges():
 
 n = g.order() # taille de l'arbre
 a = g.size() # nombre d'arete
-k = 4 # taille du sous-arbre (arbitraire)
+k = n - 8 # taille du sous-arbre (arbitraire)
 
 m = n - 1 # borne sup du degre max du graphe (a paufiner) 
 
@@ -62,7 +65,6 @@ for i in range(n): # parcours des sommets pour determiner les feuilles
         if i == e[1]:
             sum += x[e[0], i]
  
-    # le probleme est ici : 
     p.add_constraint(f[i] <= 1 + (1./m) - (sum * (1./m) ) )  # contraintes sur les feuilles
     p.add_constraint(f[i] <= 1 + sum )  # pour un sommet de degre 0
 
@@ -94,3 +96,4 @@ try:
     print("Solved.")
 except:
     print("Impossible to solve.")
+

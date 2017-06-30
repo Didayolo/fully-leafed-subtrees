@@ -41,8 +41,10 @@ f = p.new_variable(binary = True) #(integer = True, nonnegative = False) # feuil
 p.set_objective(p.sum(f[i] for i in range(n)) + p.sum(x[e] for e in edges) )
 
 # contraintes
-p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre 
+# p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre # pas besoin
 p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[e] for e in edges) + 1)  # arbre connexe (m = n + 1)
+    
+# detection de cycle ou de connexite
 
 # contraintes aretes (generer)
 for e in edges:
@@ -60,9 +62,9 @@ for i in range(n): # parcours des sommets pour determiner les feuilles
         if i == e[1]:
             sum += x[e[0], i]
  
-    # le probleme est ici : 
     p.add_constraint(f[i] <= 1 + (1./m) - (sum * (1./m) ) )  # contraintes sur les feuilles
     p.add_constraint(f[i] <= 1 + sum )  # pour un sommet de degre 0
+
 
 # resolution
 print("Solving...")
