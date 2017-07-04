@@ -25,39 +25,42 @@ g = graphs.FibonacciTree(7)
 
 g.show()
 
-edges = [] # liste de couple, a voir si utile
-for e in g.edges():
-    edges.append((e[0], e[1]))
+edges = g.edges(labels=False) 
+#for e in g.edges():
+#    edges.append((e[0], e[1]))
 
 n = g.order() # taille de l'arbre
 a = g.size() # nombre d'arete
-k = n - 8 # taille du sous-arbre (arbitraire)
+# input
+k = n - 10 # taille du sous-arbre (arbitraire)
+print(n)
 
+# max
 m = n - 1 # borne sup du degre max du graphe (a paufiner) 
 
-p = MixedIntegerLinearProgram()
+p = MixedIntegerLinearProgram() # tester des solvers 
 
 # variables du PL
-x = p.new_variable(binary = True) # aretes
-y = p.new_variable(binary = True) # sommets
-f = p.new_variable(binary = True) #(integer = True, nonnegative = False) # feuilles
+x = p.new_variable(binary = True) # aretes, x[e] si e arete presente dans le sous-arbre selectionne 
+y = p.new_variable(binary = True) # sommets y[i] si i est present dans le sous-arbre
+f = p.new_variable(binary = True) # feuilles f[i] si i est une feuille du sous-arbre
 
 # fonction objectif
-p.set_objective(p.sum(f[i] for i in range(n)) + p.sum(x[e] for e in edges) )
+p.set_objective(p.sum(f[i] for i in range(n))) # + p.sum(x[e] for e in edges) )
 
 # contraintes
 p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre 
-p.add_constraint(p.sum(y[i] for i in range(n)) == p.sum(x[e] for e in edges) + 1)  # arbre connexe (m = n + 1)
+p.add_constraint(p.sum(x[e] for e in edges) == k - 1)  # arbre connexe (m = n + 1)
 
 # contraintes aretes (generer)
-for e in edges:
-    p.add_constraint(x[e[0], e[1]] <= (y[e[0]] + y[e[1]])/2)  # presence d'une arete
+for i,j in edges:
+    p.add_constraint(x[i, j] <= (y[i] + y[j])/2)  # presence d'une arete
 
 for i in range(n): # parcours des sommets pour determiner les feuilles
-    # contraintes utiles ou redondantes ?
     p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
-    p.add_constraint(x[i,i] == 0) # pas d'arete vers sois-meme
+    # p.add_constraint(x[i,i] == 0) # pas d'arete vers soi-meme
 
+    # degree = sum(x[i,j] for j in g.neighbors(i))
     sum = 0
     for e in edges:
         if i == e[0]:
@@ -66,7 +69,8 @@ for i in range(n): # parcours des sommets pour determiner les feuilles
             sum += x[e[0], i]
  
     p.add_constraint(f[i] <= 1 + (1./m) - (sum * (1./m) ) )  # contraintes sur les feuilles
-    p.add_constraint(f[i] <= 1 + sum )  # pour un sommet de degre 0
+    # a verifier :
+    # p.add_constraint(f[i] <= 1 + sum )  # pour un sommet de degre 0
 
 # resolution
 print("Solving...")
