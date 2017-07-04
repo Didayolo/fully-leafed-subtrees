@@ -9,7 +9,7 @@ def solve(g, k):
 # k est la taille du sous arbre
 
 # Dans le cas general, on pourrait verifier si le graphe est un arbre et executer cette fonction si c'est le cas
-
+    
     g.show() # on visualise l'entree
 
     if not g.is_tree():
@@ -63,19 +63,22 @@ def solve(g, k):
             print(p.get_values(f))
 
             # affichage de la solution
-            # on voudrait le meme layout que l'affichage du graphe d'entree
             g2 = Graph()
-
-            # sommets
+            
+            #liste de sommets du sous-arbre induit
+            ve = []
             for k, v in p.get_values(y).iteritems():
                 if v == 1:
-                    g2.add_vertex(k)
+                    ve.append(k)
 
-            #aretes
+            #liste d'aretes du sous-arbre induit
+            ed = []
             for k, v in p.get_values(x).iteritems():
                 if v == 1:
-                    g2.add_edge(k)
+                    ed.append(k)
 
+            #sous-graphe avec les sommets et aretes choisies
+            g2 = g.subgraph(vertices=ve, edges=ed)
             g2.show()
             print("Solved.")
         
