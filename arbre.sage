@@ -12,68 +12,73 @@ def solve(g, k):
 
     g.show() # on visualise l'entree
 
-    print("Generating linear program...")
-
-    # constantes
-    edges = g.edges(labels=False) # liste de couples representants les aretes
-    n = g.order() # taille de l'arbre
-    a = g.size() # nombre d'arete
-    m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
+    if not g.is_tree():
+        print("Graph is not a tree")
     
-    p = MixedIntegerLinearProgram() # tester des solvers 
-
-    # variables du PL
-    x = p.new_variable(binary = True) # aretes, x[e] si e arete presente dans le sous-arbre selectionne 
-    y = p.new_variable(binary = True) # sommets y[i] si i est present dans le sous-arbre
-    f = p.new_variable(binary = True) # feuilles f[i] si i est une feuille du sous-arbre
-
-    # fonction objectif
-    p.set_objective(p.sum(f[i] for i in range(n))) # + p.sum(x[e] for e in edges) )
-
-    # contraintes
-    p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre 
-    p.add_constraint(p.sum(x[e] for e in edges) == k - 1)  # arbre connexe (m = n + 1)
-
-    # contraintes aretes (generer)
-    for i,j in edges:
-        p.add_constraint(x[i, j] <= (y[i] + y[j])/2)  # presence d'une arete
-
-    for i in range(n): # parcours des sommets pour determiner les feuilles
-        p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
-
-        degree = sum( (x[i,j] + x[j,i]) for j in g.neighbors(i)) # degre du sommet i
- 
-        p.add_constraint(f[i] <= 1 + (1./m) - (degree * (1./m) ) )  # contraintes sur les feuilles
+    else:
     
-    # resolution
-    print("Solving...")
-    
-    try:
-        print(p.solve())
-        print("Aretes x")
-        print(p.get_values(x))
-        print("Sommets y")
-        print(p.get_values(y))
-        print("Feuilles f")
-        print(p.get_values(f))
+        print("Generating linear program...")
 
-        # affichage de la solution
-        # on voudrait le meme layout que l'affichage du graphe d'entree
-        g2 = Graph()
+        # constantes
+        edges = g.edges(labels=False) # liste de couples representants les aretes
+        n = g.order() # taille de l'arbre
+        a = g.size() # nombre d'arete
+        m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
+            
+        p = MixedIntegerLinearProgram() # tester des solvers 
 
-        # sommets
-        for k, v in p.get_values(y).iteritems():
-            if v == 1:
-                g2.add_vertex(k)
+        # variables du PL
+        x = p.new_variable(binary = True) # aretes, x[e] si e arete presente dans le sous-arbre selectionne 
+        y = p.new_variable(binary = True) # sommets y[i] si i est present dans le sous-arbre
+        f = p.new_variable(binary = True) # feuilles f[i] si i est une feuille du sous-arbre
 
-        #aretes
-        for k, v in p.get_values(x).iteritems():
-            if v == 1:
-                g2.add_edge(k)
+        # fonction objectif
+        p.set_objective(p.sum(f[i] for i in range(n))) # + p.sum(x[e] for e in edges) )
 
-        g2.show()
-        print("Solved.")
-    
-    except:
-        print("Impossible to solve.")
+        # contraintes
+        p.add_constraint(p.sum(y[i] for i in range(n)) == k)  # k la taille du sous arbre 
+        p.add_constraint(p.sum(x[e] for e in edges) == k - 1)  # arbre connexe (m = n + 1)
+
+        # contraintes aretes (generer)
+        for i,j in edges:
+            p.add_constraint(x[i, j] <= (y[i] + y[j])/2)  # presence d'une arete
+
+        for i in range(n): # parcours des sommets pour determiner les feuilles
+            p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
+
+            degree = sum( (x[i,j] + x[j,i]) for j in g.neighbors(i)) # degre du sommet i
+     
+            p.add_constraint(f[i] <= 1 + (1./m) - (degree * (1./m) ) )  # contraintes sur les feuilles
+        
+        # resolution
+        print("Solving...")
+        
+        try:
+            print(p.solve())
+            print("Aretes x")
+            print(p.get_values(x))
+            print("Sommets y")
+            print(p.get_values(y))
+            print("Feuilles f")
+            print(p.get_values(f))
+
+            # affichage de la solution
+            # on voudrait le meme layout que l'affichage du graphe d'entree
+            g2 = Graph()
+
+            # sommets
+            for k, v in p.get_values(y).iteritems():
+                if v == 1:
+                    g2.add_vertex(k)
+
+            #aretes
+            for k, v in p.get_values(x).iteritems():
+                if v == 1:
+                    g2.add_edge(k)
+
+            g2.show()
+            print("Solved.")
+        
+        except:
+            print("Impossible to solve.")
 
