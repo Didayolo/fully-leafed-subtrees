@@ -46,8 +46,8 @@ def solve(g, k):
         for i in range(n): # parcours des sommets pour determiner les feuilles
             p.add_constraint(f[i] <= y[i]) # une feuille est un sommet 
 
-            degree = sum( (x[i,j] + x[j,i]) for j in g.neighbors(i)) # degre du sommet i
-     
+            degree = g.degree(i) # degre du sommet i
+ 
             p.add_constraint(f[i] <= 1 + (1./m) - (degree * (1./m) ) )  # contraintes sur les feuilles
         
         # resolution
