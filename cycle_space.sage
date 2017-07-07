@@ -5,24 +5,29 @@ def list_to_set(l):
 # Les petits ensembles representent chacun une arete
     return frozenset([frozenset([l[i-1], l[i]]) for i in range(len(l))])
 
-def symmetric_differences(l):
-# Renvoie la difference symmetrique de tout les elements de la liste
+def has_intersection(a,b):
+# renvoie Vrai si les ensembles a et b on au moins un element en commun
+    return any(e in a for e in b)
+
+def symmetric_differences(s):
+# Renvoie la difference symmetrique de tout les elements de l'ensemble
 # On note le s a differences
-    if len(l) >= 1:
-        res = l[0]
+    if len(s) >= 1:
+        res = s[0]
     else:
         return frozenset()  
 
-    if len(l) >= 2:
+    if len(s) >= 2:
     
-        for i in range(1, len(l)):
-            res = res.symmetric_difference(l[i])
-    
+        for i in range(1, len(s)):
+            if has_intersection(res, s[i]):
+                res = res.symmetric_difference(s[i])
+            else:
+                return frozenset()
     return res
 
-
 def all_subsets(s):
-# renvoie toutes les sous listes d'une liste
+# renvoie toutes les sous-ensembles d'un ensemble
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 def cycle_space(g):
