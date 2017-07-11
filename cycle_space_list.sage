@@ -15,7 +15,7 @@ def symmetric_differences(s):
     if len(s) >= 1:
         res = s[0]
     else:
-        return frozenset()  
+        return set()  
 
     if len(s) >= 2:
     
@@ -23,7 +23,7 @@ def symmetric_differences(s):
             if has_intersection(res, s[i]):
                 res = res.symmetric_difference(s[i])
             else:
-                return frozenset()
+                return set()
     return res
 
 def all_subsets(s):
@@ -38,13 +38,12 @@ def cycle_space(g):
     # traitement ...
     for e in basis:
         basis_f.add(list_to_set(e))
-    basis_f = frozenset(basis_f)    
 
-    space = set() # cycle space    
+    space = [] # cycle space    
 
     # premiere idee pour generer l'espace a partir de la base
     for s in all_subsets(basis_f):
-        space.add(symmetric_differences(s))   
+        space.append(symmetric_differences(s))   
  
     return space
 
