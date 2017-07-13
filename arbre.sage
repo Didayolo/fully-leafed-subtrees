@@ -47,7 +47,7 @@ def solve(g, k):
 
             degree = p.sum((e[i,j] + e[j,i]) for j in g.neighbors(i)) # degre du sommet i dans le sous-arbre
  
-            p.add_constraint(l[i] <= 1 + (1./m) - (degree * (1./m) ) )  # contraintes sur les feuilles
+            p.add_constraint(l[i] <= 1 + (1./m) - (degree * (1./m) ) )  # contraintes sur les feuilles  Plus clair:  1 + (1-d)/m
         
         # resolution
         print("Solving...")
@@ -77,7 +77,7 @@ def solve(g, k):
                     ed.append(i)
 
             #sous-graphe avec les sommets et aretes choisies
-            g2 = g.subgraph(vertices=ve, edges=ed)
+            g2 = g.subgraph(vertices=ve) #, edges=ed) si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
             g2.show()
             print("Solved.")
         
