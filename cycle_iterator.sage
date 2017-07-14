@@ -11,7 +11,7 @@ def all_cycle(g):
 
     #initialisation : adding basis cycles in set and in the result
     for c in basic_cycles:
-        cycle_tmp = cycle_with_edges(c) #set of edges (tuples) of the cycle c
+        cycle_tmp = cycle_with_edges(c) #set of edges of the cycle c
         cycles.add(cycle_tmp)
         basic_cycles_tmp.append(cycle_tmp)
 
@@ -38,14 +38,18 @@ def display_all_cycle(cycles):
 
 
 def cycle_with_edges(l):
-    """ return set containing edges of the cycle list l """
+    """
+        INPUT   : list representing a cycle
+        OUTPUT  : (frozen)set containing edges of the cycle list l
+        EXAMPLE : cycle_with_edges([0,1,2]) ==> {{0,1}, {1,2}, {2,0}}
+    """
     li = []
     for i, v in enumerate(l):
         if i + 1 < len(l):
-            li.append((v, l[i + 1]))
+            li.append(frozenset([v, l[i + 1]]))
             continue
 
-    li.append((l[0], l[-1])) #edge between the first vertex and the last one
+    li.append(frozenset([l[0], l[-1]])) #edge between the first vertex and the last one
     ret = frozenset(li)
 
     return ret
@@ -60,6 +64,3 @@ g = graphs.CompleteGraph(5)
 ac = all_cycle(g)
 display_all_cycle(ac)
 """
-
-
-
