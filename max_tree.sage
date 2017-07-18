@@ -26,7 +26,7 @@ def solve(g):
     p.set_objective(p.sum(v[i] for i in vertices)) # on souhaite maximiser le nombre de sommets
 
     # contraintes
-    p.add_constraint(p.sum(e[i] for i in edges) == p.sum(v[j] for j in vertices) + 1 )  # arbre connexe (m = n + 1)
+    p.add_constraint(p.sum(e[i] for i in edges) == p.sum(v[j] for j in vertices) - 1 )  # arbre connexe (m = n - 1)
 
     # contraintes aretes (generer)
     for i,j in edges:
