@@ -1,3 +1,5 @@
+load("cycle_iterator.sage")
+
 # On cherche le plus grand sous-arbre induit dans un graphe donné
 
 # On veux generer le programme lineaire a partir d'un graphe
@@ -15,7 +17,8 @@ def solve(g):
     n = g.order() # taille du graphe
     a = g.size() # nombre d'arete
     m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
-        
+    cycles = all_cycle(g) # fonction de cycle_iterator.sage   
+     
     p = MixedIntegerLinearProgram()  
 
     # variables du PL
@@ -31,6 +34,21 @@ def solve(g):
     # contraintes aretes (generer)
     for i,j in edges:
         p.add_constraint(e[i, j] <= (v[i] + v[j])/2)  # presence d'une arete
+        p.add_constraint(e[j, i] <= (v[i] + v[j])/2)  # car non oriente ?
+
+        # probleme (encore le coup du non oriente ?)
+        p.add_constraint(e[i, j] == e[j, i])
+
+    # contraintes d'acyclicite (a ameliorer)
+    for cycle in cycles: # pour chaque cycle
+        length = 0 # taille du cycle
+        sum = 0 # somme des aretes selectionnees
+        for edge in cycle:
+            i, j = list(edge)
+            sum += e[i, j]
+            sum += e[j, i] # car non oriente ?
+            length += 1
+    p.add_constraint((sum*2) + 1 <= length) # on ne doit pas selectionner un cycle
 
     # resolution
     print("Solving...")
@@ -58,7 +76,9 @@ def solve(g):
                 ed.append(i)
 
         #sous-graphe avec les sommets et aretes choisies
-        g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
+        #g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
+        g2.add_vertices(ve)
+        g2.add_edges(ed)
         g2.show()
         print("Solved.")
     
