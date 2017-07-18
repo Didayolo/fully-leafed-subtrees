@@ -20,6 +20,7 @@ def solve(g, k):
 
         # constantes
         edges = g.edges(labels=False) # liste de couples representants les aretes
+        vertices = g.vertices()
         n = g.order() # taille de l'arbre
         a = g.size() # nombre d'arete
         m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
@@ -32,10 +33,10 @@ def solve(g, k):
         l = p.new_variable(binary=True) # leaves, f[i] si i est une feuille du sous-arbre
 
         # fonction objectif
-        p.set_objective(p.sum(l[i] for i in range(n)))
+        p.set_objective(p.sum(l[i] for i in vertices))
 
         # contraintes
-        p.add_constraint(p.sum(v[i] for i in range(n)) == k)  # k la taille du sous arbre 
+        p.add_constraint(p.sum(v[i] for i in vertices) == k)  # k la taille du sous arbre 
         p.add_constraint(p.sum(e[i] for i in edges) == k - 1)  # arbre connexe (m = n + 1)
 
         # contraintes aretes (generer)
