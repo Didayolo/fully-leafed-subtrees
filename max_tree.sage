@@ -16,14 +16,14 @@ def solve(g):
     a = g.size() # nombre d'arete
     m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
         
-    p = MixedIntegerLinearProgram() # tester des solvers 
+    p = MixedIntegerLinearProgram()  
 
     # variables du PL
     e = p.new_variable(binary=True) # edges, e[i] si l'arete i presente dans le sous-arbre selectionne 
     v = p.new_variable(binary=True) # vertices, v[i] si le sommet i est present dans le sous-arbre
 
     # fonction objectif
-    p.set_objective(p.sum(v[i] for i in vertices))
+    p.set_objective(p.sum(v[i] for i in vertices)) # on souhaite maximiser le nombre de sommets
 
     # contraintes
     p.add_constraint(p.sum(e[i] for i in edges) == p.sum(v[j] for j in vertices) + 1 )  # arbre connexe (m = n + 1)
@@ -32,12 +32,6 @@ def solve(g):
     for i,j in edges:
         p.add_constraint(e[i, j] <= (v[i] + v[j])/2)  # presence d'une arete
 
-#    for i in range(n): # parcours des sommets pour determiner les feuilles
-
-#        degree = p.sum((e[i,j] + e[j,i]) for j in g.neighbors(i)) # degre du sommet i dans le sous-arbre
-
- #       p.add_constraint(l[i] <= 1 + (1./m) - (degree * (1./m) ) )  # contraintes sur les feuilles  Plus clair:  1 + (1-d)/m
-    
     # resolution
     print("Solving...")
     
@@ -64,7 +58,7 @@ def solve(g):
                 ed.append(i)
 
         #sous-graphe avec les sommets et aretes choisies
-        #g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
+        g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
         g2.show()
         print("Solved.")
     
