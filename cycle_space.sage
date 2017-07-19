@@ -19,11 +19,11 @@ def symmetric_differences(s):
         res = s[0]
     
         for i in range(1, len(s)):
-            if has_intersection(res, s[i]):
-                res = res.symmetric_difference(s[i])
-            else: # deux elements sont disjoints
+            #if has_intersection(res, s[i]):
+            res = res.symmetric_difference(s[i])
+            #else: # deux elements sont disjoints
                 # cela pose un probleme !
-                return frozenset()
+            #    return frozenset()
     return res
 
 def all_subsets(s):
@@ -40,12 +40,14 @@ def cycle_space(g):
         basis_f.add(list_to_set(e))
     basis_f = frozenset(basis_f)    
 
-    space = set() # Cycle space    
+    #space = set() # Cycle space    
+    space = []
 
     # Premiere idee pour generer l'espace a partir de la base
     for s in all_subsets(basis_f):
-        space.add(symmetric_differences(s))   
- 
+        #space.add(symmetric_differences(s))   
+        space.append(symmetric_differences(s))
+
     return space
 
 def show_space(space, graph):
