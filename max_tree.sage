@@ -43,7 +43,8 @@ def solve(g):
     for i,j in edges:
         # on veux un sous-arbre INDUIT, donc forcer la presence de l'arete !
       #  p.add_constraint(e[i, j] == logical_and(v[i], v[j]) )  # presence d'une arete
-        p.add_constraint(e[i, j] + 1 >= v[i] + v[j])
+        p.add_constraint(e[i, j] + 1 >= v[i] + v[j]) # v[i] and v[j] => e[i, j]
+        p.add_constraint(e[i, j] <= (v[i] + v[j]) / 2) # e[i, j] => v[i] and v[j]
         edge_sum += e[i, j]
 
         # graphe non oriente
@@ -67,10 +68,10 @@ def solve(g):
     
     try:
         print(p.solve())
-        print("Edges e")
-        print(p.get_values(e))
-        print("Vertices v")
+        print("Vertices from LP (variable v)")
         print(p.get_values(v))
+        print("Edges from LP (variable e)")
+        print(p.get_values(e))
 
         # affichage de la solution
         g2 = Graph()
@@ -88,10 +89,16 @@ def solve(g):
                 ed.append(i)
 
         #sous-graphe avec les sommets et aretes choisies
-        g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
-    #    g2.add_vertices(ve)
-    #    g2.add_edges(ed)
+    #    g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
+        g2.add_vertices(ve)
+        g2.add_edges(ed)
         g2.show()
+        print("Number of vertices : "+str(len(ve)))
+        print("Number of edges : "+str(len(ed)/2))
+        print("Vertices")
+        print(ve)
+        print("Edges")
+        print(ed)
         print("Solved.")
     
     except:
