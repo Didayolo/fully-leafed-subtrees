@@ -4,6 +4,16 @@ load("cycle_iterator.sage")
 
 # On veux generer le programme lineaire a partir d'un graphe
 
+def logical_and(a, b):
+    print(a)
+    print(b)
+    if (a == 1) and (b == 1):
+        print('1')
+        return 1
+    else:
+        print('0')
+        return 0
+
 def solve(g):
 # Resolution du probleme pour un graphe g 
 
@@ -28,17 +38,19 @@ def solve(g):
     # fonction objectif
     p.set_objective(p.sum(v[i] for i in vertices)) # on souhaite maximiser le nombre de sommets
 
-    # contraintes
-    p.add_constraint(p.sum(e[i] for i in edges) == p.sum(v[j] for j in vertices) - 1 )  # arbre connexe (m = n - 1)
-
-    # contraintes aretes (generer)
+    # contraintes aretes
+    edge_sum = 0
     for i,j in edges:
-        p.add_constraint(e[i, j] <= (v[i] + v[j])/2)  # presence d'une arete
-        p.add_constraint(e[j, i] <= (v[i] + v[j])/2)  # car non oriente ?
+        # on veux un sous-arbre INDUIT, donc forcer la presence de l'arete !
+      #  p.add_constraint(e[i, j] == logical_and(v[i], v[j]) )  # presence d'une arete
+        p.add_constraint(e[i, j] + 1 >= v[i] + v[j])
+        edge_sum += e[i, j]
 
-        # probleme (encore le coup du non oriente ?)
+        # graphe non oriente
         p.add_constraint(e[i, j] == e[j, i])
-
+    
+    p.add_constraint(edge_sum == (p.sum(v[k] for k in vertices) - 1) )  # arbre connexe (m = n - 1) 
+   
     # contraintes d'acyclicite (a ameliorer)
     for cycle in cycles: # pour chaque cycle
         length = 0 # taille du cycle
@@ -46,9 +58,9 @@ def solve(g):
         for edge in cycle:
             i, j = list(edge)
             sum += e[i, j]
-            sum += e[j, i] # car non oriente ?
             length += 1
-    p.add_constraint((sum*2) + 1 <= length) # on ne doit pas selectionner un cycle
+
+        p.add_constraint(sum + 1 <= length) # on ne doit pas selectionner un cycle
 
     # resolution
     print("Solving...")
@@ -76,9 +88,9 @@ def solve(g):
                 ed.append(i)
 
         #sous-graphe avec les sommets et aretes choisies
-        #g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
-        g2.add_vertices(ve)
-        g2.add_edges(ed)
+        g2 = g.subgraph(vertices=ve) #, edges=ed) # si on ne precise pas les aretes, subgraph renvoie le sous-graphe induit par les sommets
+    #    g2.add_vertices(ve)
+    #    g2.add_edges(ed)
         g2.show()
         print("Solved.")
     
