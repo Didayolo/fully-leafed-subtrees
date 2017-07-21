@@ -88,14 +88,15 @@ def cycle_iterator(g):
         n -= 1
 
 
-r"""
-g = graphs.CompleteGraph(4)
+#r"""
+g = graphs.CompleteGraph(5)
 #g = graphs.PetersenGraph()
 #g = Graph()
 #g.add_vertices([1,2,3,4,5])
 #g.add_edges([(1,2), (2,3), (3,4), (4,5), (5,1), (1,3), (1,4)])
 ac = all_cycle(g)
 display_all_cycle(ac)
+"""
 print "########################################"
 it = cycle_iterator(g)
 try:
