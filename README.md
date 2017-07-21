@@ -16,3 +16,5 @@
 - [ ] Lire la doc de contribution à Sage
 - [ ] Traduire en anglais le code (commentaires, nom de variables...)
 - [ ] Problème Tree-in-the-box
+- [ ] Enumerer les solutions de Tree-in-the-box
+- [ ] Etudier le problème 'Minimum feeddback vertex set' sur les hypercubes

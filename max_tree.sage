@@ -57,7 +57,7 @@ def solve(g):
     print("Solving...")
     
     try:
-        print(p.solve())
+        print(p.solve()) #objective_only=True))
         print("Vertices from LP (variable v)")
         print(p.get_values(v))
         print("Edges from LP (variable e)")
