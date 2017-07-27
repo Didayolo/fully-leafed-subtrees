@@ -6,18 +6,9 @@ from itertools import combinations
 
 # (iterateur ?)
 
-#def solve():
-
-    # initialisation de la premiere reponse qui satisfait forcement le systeme 
- #   x = vertices[0]
- ##   res = [x]
- #  i = vertices.index(x)
- #   V = vertices[:i] + vertices[i+1:] # vertices prive de x
-
- #   x = V[0]
-
 def afficher(g):
 # fonction basique d'affichage d'un graphe
+# utile pour debugger
     print('Vertices : ')
     print(g.vertices())
     print('Edges : ')
@@ -40,7 +31,7 @@ def solve(g, selected, tab):
 
     sommet_courant = selected[-1] # haut de la pile
     # print("sommet courant : " + str(sommet_courant)) ##
-    # utilisation hashmap possible
+    # utilisation hashmap possible (changer structure de donnees)
     i = vertices.index(sommet_courant) # indice du sommet courant dans tab
     print("i : " + str(i)) ##
    
