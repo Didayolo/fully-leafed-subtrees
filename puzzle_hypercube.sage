@@ -83,7 +83,10 @@ def solve_bt(k, selected_patterns, bt): # avec k > 3
     #selected_patterns est la 'pile'
     #bt est un booleen qui indique qu'il faut changer le haut de la pile
     g = graphs.CubeGraph(k)
-    vertices = selected_patterns_to_vertices(selected_patterns, k)
+    vertices = selected_patterns_to_vertices(selected_patterns, k) # le probleme vient sans doute d'ici
+    # le prefixe donne ne sera pas forcement celui qui rend connexe le sous-graphe
+    # idee : 
+    # liste des prefixes restants, on selectionne jusqu'a ce que ca donne un arbre ou on laisse tomber le pattern
     t = g.subgraph(vertices)
     cubes = 2**(k-3)
     len_sp = len(selected_patterns)
@@ -101,6 +104,7 @@ def solve_bt(k, selected_patterns, bt): # avec k > 3
         else: # on veux ajouter un pattern
             #roots et patterns 
             if len_sp == 0: # on choisit une racine
+                # INUTILE, len_sp est toujours > 0 !
                 selected_patterns.append(roots[0])
                 return solve_bt(k, selected_patterns, False)
             else: # on choisit un pattern
@@ -112,7 +116,7 @@ def solve_bt(k, selected_patterns, bt): # avec k > 3
         if len_sp == 1: # il s'agissait d'une racine
             i = roots.index(last_try)
             if i == (len(roots) - 1): # plus de changements possibles
-                # end of movie ?
+                # pas de solutions
                 # plus de racines
                 return Graph()
             else: # changement
@@ -128,5 +132,6 @@ def solve_bt(k, selected_patterns, bt): # avec k > 3
                 selected_patterns = selected_patterns[:-1] + [patterns[i+1]]
                 return solve_bt(k, selected_patterns, False)
 
-k = 5
-print(solve_bt(k, [roots[0]],False))
+# exemples d'utilisations
+# solve(6)
+# solve_bt(5, [roots[0]], False)
