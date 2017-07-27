@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from itertools import product
+from math import log
 
 # On separe les sous-cubes en patterns
 # On essaie de les combiner pour obtenir un arbre
@@ -31,37 +34,99 @@ b3 = [] # + 3 rotations
 b4 = [] # + 3 rotations
 # on verra plus tard pour ceux là
 
+def selected_patterns_to_vertices(selected_patterns, k):
+# on part d'une liste de patterns 
+# et on renvoie l'ensemble des sommets selectionnes
+    vertices = []
+    it_prefixes = product('01', repeat=(k-3)) # tkt
+    for p in selected_patterns:
+        prefixe = ''.join(next(it_prefixes))
+        vertices += [prefixe + w for w in p]
+    return vertices
+   
+
 # solve
-k = 7 # avec k > 3
-g = graphs.CubeGraph(k)
-cubes = 2**(k-3)
-selected_patterns = [] # len(selected_patterns = cubes)
+def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
+    g = graphs.CubeGraph(k)
+    cubes = 2**(k-3)
+    selected_patterns = [] # len(selected_patterns) = cubes
 
-# une racine + (cubes - 1) patterns
-# methode brute
-for r in roots:
-    it_patterns = product(patterns, repeat=(cubes - 1))
-    for p in it_patterns:
-        selected_patterns = [r]
-        selected_patterns += list(next(it_patterns))
+    solutions = 0
 
-        vertices = []
-        it_prefixes = product('01', repeat=(k-3))
-        for p in selected_patterns:
-            prefixe = ''.join(next(it_prefixes))
-            vertices += [prefixe + w for w in p]
+    # une racine + (cubes - 1) patterns
+    # methode brute
+    for r in roots:
+        it_patterns = product(patterns, repeat=(cubes - 1))
+        for p in it_patterns:
+            selected_patterns = [r]
+            selected_patterns += list(next(it_patterns))
 
-        t = g.subgraph(vertices)
-        if(t.is_tree()):
-            t.show()
-            print(t.order())
-            #print(t.vertices())
-            #print(t.edges(labels=False)) 
-            #print("\n")
+            vertices = selected_patterns_to_vertices(selected_patterns, k)
+
+            t = g.subgraph(vertices)
+            if(t.is_tree()): # une solution
+                solutions += 1
+                t.show()
+                print(t.order())
+                print(t.vertices())
+                #print(t.edges(labels=False)) 
+                print("\n")
+
+    print(str(solutions) + " solutions trouvees.")
 
 # methode backtracking
 # on part de la racine
 # on ajoute des patterns voisins tant qu'on obtient un arbre
 # sinon on revient et on tente d'autres patterns, etc.
 
+def solve_bt(k, selected_patterns, bt): # avec k > 3
+    #selected_patterns est la 'pile'
+    #bt est un booleen qui indique qu'il faut changer le haut de la pile
+    g = graphs.CubeGraph(k)
+    vertices = selected_patterns_to_vertices(selected_patterns, k)
+    t = g.subgraph(vertices)
+    cubes = 2**(k-3)
+    len_sp = len(selected_patterns)
+   
+    if t.is_tree() and (not bt): # on est dans la course
+ 
+        if len_sp == cubes:
+            # solution !
+            t.show()
+            print(t.order())
+            print(t.vertices())
+            print("\n")
+            return t
+        
+        else: # on veux ajouter un pattern
+            #roots et patterns 
+            if len_sp == 0: # on choisit une racine
+                selected_patterns.append(roots[0])
+                return solve_bt(k, selected_patterns, False)
+            else: # on choisit un pattern
+                selected_patterns.append(patterns[0])
+                return solve_bt(k, selected_patterns, False)
 
+    else: # il faut changer le dernier pattern
+        last_try = selected_patterns[len_sp - 1] # haut de la pile 
+        if len_sp == 1: # il s'agissait d'une racine
+            i = roots.index(last_try)
+            if i == (len(roots) - 1): # plus de changements possibles
+                # end of movie ?
+                # plus de racines
+                return Graph()
+            else: # changement
+                selected_patterns = [roots[i+1]]
+                return solve_bt(k, selected_patterns, False)
+        else: # il s'agissait d'un pattern 
+            i = patterns.index(last_try)
+            if i == (len(patterns) - 1): # plus de changements possibles
+                # on revient en arriere
+                selected_patterns = selected_patterns[:-1]
+                return solve_bt(k, selected_patterns, True)
+            else: # changement
+                selected_patterns = selected_patterns[:-1] + [patterns[i+1]]
+                return solve_bt(k, selected_patterns, False)
+
+k = 5
+print(solve_bt(k, [roots[0]],False))
