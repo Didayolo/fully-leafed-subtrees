@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+####### D'après l'article : https://arxiv.org/pdf/1309.1051.pdf #######
+
 def chordless_cycles(g):
 
 	degree_labelling(g)
@@ -17,9 +20,9 @@ def adjency_matrix(g):
 	ret = {}
 	for v in vertices:
 		ret[v] = g.neighbors(v)
-	#ret = numpy.array(ret)
 
 	return ret
+
 
 def degree_labelling(g):
 	global label
@@ -104,8 +107,8 @@ def is_edge(x, y):
 
 
 
-#g = graphs.PetersenGraph()
-g = graphs.CompleteGraph(4)
+g = graphs.PetersenGraph()
+#g = graphs.CompleteGraph(4)
 vertices = g.vertices()
 edges = g.edges(labels=False)
 n = len(vertices)
@@ -117,6 +120,7 @@ blocked = {}
 label = {}
 
 adj = adjency_matrix(g)
+#adj = g.adjacency_matrix()
 cycles = chordless_cycles(g)
 
 for i, c in enumerate(cycles):
