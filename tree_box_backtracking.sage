@@ -22,6 +22,81 @@ def voisin_suivant(sommet, i):
     return sommet[:i] + str((1 - int(sommet[i])) ) + sommet[i+1:]
     
 
+def solve_iterative(k, l):
+    # version iterative
+    # a commenter (meme fonctionnement que solve() )
+
+    g = graphs.CubeGraph(k)
+    vertices = g.vertices()
+    selected = [vertices[0]]
+    tab = [1]
+    
+    bt = False
+    
+    while True: #not solved:
+    
+        print(selected)
+    
+        deja_vu = selected[-1] in selected[:-1]
+        tree = True
+        count = 0
+        for x in range(k):
+            if voisin_suivant(selected[-1], x) in selected[:-1]:
+                count += 1
+    
+        if count != 1:
+            tree = False
+
+        if len(selected) == 1: ##
+            tree = True
+
+        if (tree) and (not bt) and (not deja_vu):
+        # Dans la course
+            if len(selected) == l:
+                # solution trouvee
+                t = g.subgraph(selected)
+                print("Problem solved")
+                t.show()
+                print(t.order())
+                print(t.vertices())
+                print("\n")
+                return t
+
+            else: # ajout
+                i = tab[-1]
+                suivant = vertices[i]
+                selected.append(suivant)
+
+                if i == 0: 
+                    tab.append(1)
+                else:
+                    tab.append(0)
+
+                tab[-2] += 1
+                bt = False
+
+        else: # c'est chaud
+            
+            last_i = tab[-2]
+
+            if last_i == 2**k: # plus de changements
+                selected = selected[:-1]
+                tab = tab[:-1]
+                if len(selected) == 1: # fin
+                    print("Problem has no solution")
+                    return Graph()
+                else:
+                    bt = True
+                
+            else: # changement
+                last_last_try = selected[-2]
+                suivant = vertices[last_i]
+                selected[-1] = suivant
+                tab[-2] += 1
+                tab[-1] = 0
+                bt = False
+                    
+
 def solve(k, l):
 
     def slv(k, g, l, selected, tab, bt):
