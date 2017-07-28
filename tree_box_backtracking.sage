@@ -35,8 +35,6 @@ def solve_iterative(k, l):
     
     while True: #not solved:
     
-        print(selected)
-    
         deja_vu = selected[-1] in selected[:-1]
         tree = True
         count = 0
