@@ -1,3 +1,4 @@
+#load("cycle_enumerator.sage")
 load("cycle_iterator.sage")
 
 # On a un graphe a n sommets, et on cherche parmis les
@@ -20,7 +21,8 @@ def solve(g):
     n = g.order() # taille de l'arbre
     a = g.size() # nombre d'arete
     m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
-    cycles = all_cycle(g)    
+    #cycles = naive_all_cycles_iterator(g)
+    cycles = all_cycle(g)
 
     p = MixedIntegerLinearProgram() # tester des solvers 
 

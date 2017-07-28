@@ -52,6 +52,7 @@ def naive_all_cycles_iterator(g):
 
 
 ########## testing graphs ##########
+r"""
 g = Graph()
 g.add_vertices([1,2,3,4,5,6,7,8,9])
 g.add_edges([(1,2), (2,3), (3,4), (4,9), (4,5), (5,6), (6,2), (1,7), (7,8), (8,9)])
@@ -67,3 +68,4 @@ g4 = graphs.PetersenGraph()
 cycles = naive_all_cycles_iterator(g3)
 for i, c in enumerate(cycles):
 	print "{} : {}".format(i, c)
+"""
