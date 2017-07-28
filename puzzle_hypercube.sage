@@ -47,6 +47,11 @@ def selected_patterns_to_vertices(selected_patterns, k):
 
 # solve
 def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
+
+    if k < 4:
+        print("k has to be greater than 3")
+        return Graph()
+
     g = graphs.CubeGraph(k)
     cubes = 2**(k-3)
     selected_patterns = [] # len(selected_patterns) = cubes
@@ -80,6 +85,10 @@ def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
 # sinon on revient et on tente d'autres patterns, etc.
 
 def solve_bt(k):
+
+    if k < 4:
+        print("k has to be greater than 3")
+        return Graph()
 
     def slv_bt(k, selected_patterns, bt): # avec k > 3
         #selected_patterns est la 'pile'
@@ -135,7 +144,7 @@ def solve_bt(k):
                     selected_patterns[-1] = patterns[i+1]
                     return slv_bt(k, selected_patterns, False)
 
-    return solve(k, [roots[0]], False)
+    return slv_bt(k, [roots[0]], False)
 
 # exemples d'utilisations
 # solve(6)
