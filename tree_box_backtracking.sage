@@ -2,6 +2,7 @@ from itertools import combinations
 
 # On explore l'hypercube
 # On veux toujours avoir un arbre au cours de la construction
+# Dans cette construction on veux tester tous les arbres
 # Backtracking
 
 # (iterateur ?)
@@ -15,13 +16,6 @@ def afficher(g):
     print(g.edges(labels=False))
     g.show()
 
-def suivant(sommet, i):
-    return sommet[:i] + str(1 - int(sommet[i])) + sommet[i+1:]
-
-
-def voisin_suivant_old(sommet, i, g):
-    voisins = g.neighbors(sommet)
-    return voisins[i]
 
 def voisin_suivant(sommet, i):
     # (000,0) -> 100    (100, 1) -> 010    (010, 2) -> 001
@@ -36,11 +30,12 @@ def solve(k, l):
         # solve(k, [graphs.CubeGraph(k).vertices()[0]], [0], False)
 
         len_pile = len(selected)
-          
+        vertices = g.vertices()        
+  
         last_try = selected[len_pile - 1] # haut de la pile
         i = tab[len_pile - 1] # haut de la pile tab
         last_i = tab[len_pile - 2] # mouais
-        
+         
         #debug
         #print("selected : " + str(selected))
         #print("tab : " + str(tab))
@@ -49,10 +44,18 @@ def solve(k, l):
         tree = True        
 
         # plutot que t.is_tree()
+        count = 0
         for x in range(k):
-            if voisin_suivant(last_try, x) in selected[:-2]:
-                # on a un cycle
-                tree = False
+            if voisin_suivant(last_try, x) in selected[:-1]:
+                count += 1
+       
+        if count != 1:
+        # i > 1 on a un cycle
+        # i < 1 on est pas connexe
+            tree = False
+        
+        if len_pile == 1: # test debug
+            tree = True
 
         if (tree) and (not bt) and (not deja_vu): 
         # on est dans la course: arbre, pas de retour en arriere et 
@@ -70,8 +73,9 @@ def solve(k, l):
 
             else: # on ajoute un sommet
                 # print("ajout\n")
-                voisin = voisin_suivant(last_try, i)
-                selected.append(voisin)
+                # voisin = suivant(last_try, i)
+                suivant = vertices[i]
+                selected.append(suivant)
                 
                 if i == 0: # legere optimisation
                     tab.append(1) # pour ne pas reproposer le pere
@@ -85,12 +89,12 @@ def solve(k, l):
         else: # il faut changer le dernier sommet selectionne
             last_i = tab[len_pile - 2]
             
-            if last_i == k: # plus de changements possibles
+            if last_i == 2**k: # plus de changements possibles (len(vertices))
                 # print("backtrack\n")
                 # on revient en arriere
                 selected = selected[:-1]
                 tab = tab[:-1]
-                if len(selected) == 1: # end of movie
+                if len(selected) == 0: # end of movie
                     print("Problem has no solution")
                     return Graph()
                 else: # on continue
@@ -98,15 +102,16 @@ def solve(k, l):
                     return slv(k, g, l, selected, tab, True)
 
             else: # changement
-                # print("changement\n")
+                # print("changement\n")
                 last_last_try = selected[len_pile - 2]
-                voisin = voisin_suivant(last_last_try, last_i)
-                selected[-1] = voisin
+                # voisin = voisin_suivant(last_last_try, last_i)
+                suivant = vertices[last_i]
+                selected[-1] = suivant
                 tab[-2] = tab[-2] + 1 # on incremente i
                 tab[-1] = 0 # i du nouveau candidat
                 
-                return slv(k, g, l, selected, tab, bt)
+                return slv(k, g, l, selected, tab, False)
     
     g = graphs.CubeGraph(k)
-    return slv(k, g, l, [g.vertices()[0]], [0], False)
+    return slv(k, g, l, [g.vertices()[0]], [1], False)
     
