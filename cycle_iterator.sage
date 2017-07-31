@@ -1,111 +1,63 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-def all_cycle(g):
-    basic_cycles = g.cycle_basis()
-    n = len(basic_cycles) #there are n - 1 step to generate all cycles
-    basic_cycles_tmp = [] #temporary list to make the frozenset
-
-    cycles = set()
-    cycle_already_done = set() #keep couple of symmetric_differences already calculated
-
-    #initialisation : adding basis cycles in set and in the result
-    for c in basic_cycles:
-        cycle_tmp = cycle_with_edges(c) #set of edges of the cycle c
-        cycles.add(cycle_tmp)
-        basic_cycles_tmp.append(cycle_tmp)
-
-    set_basic_cycles = frozenset(basic_cycles_tmp)
-
-    #generating all cycles from the basis
-    while(n - 1 > 0):
-        cycle_tmp = cycles.copy()
-        for i, c in enumerate(cycle_tmp):
-            for j, c2 in enumerate(set_basic_cycles):
-                if c.intersection(c2) and c != c2 and (c,c2) not in cycle_already_done:
-                    cycles.add(c.symmetric_difference(c2))
-                    cycle_already_done.add((c,c2)) #add and in/not in a set : O(1)
-        n -= 1
-
-    cycles.discard(frozenset([])) #removing empty set
-
-    return cycles
+####### D'après l'article : https://arxiv.org/pdf/1205.2766.pdf #######
 
 
-def display_all_cycle(cycles):
-    for i, c in enumerate(cycles):
-        print str(i+1) + " : " + str(c).replace('frozenset([','{').replace('])','}')
-    #print "There are {} cycles." .format(len(cycles))
+def cycles_iterator(g):
+	seen = set()
+	same_cycle_different_paths = set()
+
+	#decomposition into biconnected components
+	cut_edges = g.bridges()
+	if len(cut_edges) > 0:
+		#there is at least one articulation point
+		g.delete_edges(cut_edges)
+
+	ccs = g.connected_components() #fill the connected components list
+
+	#for each connected component, we extract simple cycles by removing back edges
+	#and listing all path from start to end of the removed edge
+	for cc in ccs:
+		cc_edges = [e for e in g.edges() if e[0] in cc and e[1] in cc]
+		for e in cc_edges:
+			if e[1] in seen: #e is a back edge
+				g.delete_edge(e)
+				cycles = g.all_paths(e[0], e[1])
+
+				#there are duplicates for some simple cycles,
+				#there can be 2 different paths for the same cycle
+				for c in cycles:
+					sorted_cycle = tuple(sorted(c))
+					if sorted_cycle not in same_cycle_different_paths:
+						same_cycle_different_paths.add(sorted_cycle)
+						yield c
+				cycles = []
+			seen.add(e[1])
 
 
-def cycle_with_edges(l):
-    r"""
-        INPUT   : list representing a cycle
-        OUTPUT  : (frozen)set containing edges of the cycle list l
-        EXAMPLE : cycle_with_edges([0,1,2]) ==> {{0,1}, {1,2}, {2,0}}
-    """
-    li = []
-    for i, v in enumerate(l):
-        if i + 1 < len(l):
-            li.append(frozenset([v, l[i + 1]]))
-            continue
 
-    li.append(frozenset([l[0], l[-1]])) #edge between the first vertex and the last one
-    ret = frozenset(li)
+########## testing graphs ##########
+g = Graph()
+g.add_vertices([1,2,3,4,5,6,7,8,9])
+g.add_edges([(1,2), (2,3), (3,4), (4,9), (4,5), (5,6), (6,2), (1,7), (7,8), (8,9)])
 
-    return ret
+g2 = Graph()
+g2.add_vertices(range(1,18))
+g2.add_edges([(1, 2),(1, 3),(2, 3),(3, 4),(4, 5),(4, 11),(5, 6),(5, 13),(5, 15),(6, 7),(7, 8),(8, 9),(9, 10),(10, 11),(12, 13),(12, 14),(13, 14),(15, 16),(15, 17),(16, 17)])
 
+g3 = Graph()
+g3.add_vertices(range(1,18))
+g3.add_edges([(1, 2),(1, 3),(2, 3),(3, 4),(4, 5),(4, 11),(5, 6),(5, 13),(5, 15),(6, 7),(7, 8),(8, 9),(9, 10),(10, 11),(12, 13),(12, 14),(13, 14),(15, 16),(15, 17),(16, 17)])
+g3.add_edges([(6,10), (7,10)])
 
-def cycle_iterator(g):
-    basic_cycles = g.cycle_basis()
-    n = len(basic_cycles)
-    basic_cycles_tmp = [] #temporary list to make the frozenset
+g4 = graphs.CompleteGraph(10)
 
-    cycles = set()
-    cycle_already_done = set() #keep couple of symmetric_differences already calculated
+g5 = graphs.PetersenGraph()
 
-    #initialisation : adding basis cycles in set and in the result
-    for c in basic_cycles:
-        cycle_tmp = cycle_with_edges(c) #set of edges of the cycle c
-        cycles.add(cycle_tmp)
-        basic_cycles_tmp.append(cycle_tmp)
-        #yield cycle_tmp
-
-    set_basic_cycles = frozenset(basic_cycles_tmp)
-
-    #generating all cycles from the basis
-    while(n - 1 > 0):
-        cycle_tmp = cycles.copy()
-        for i, c in enumerate(cycle_tmp):
-            for j, c2 in enumerate(set_basic_cycles):
-                if c.intersection(c2) and i != j and (c,c2) not in cycle_already_done:
-                    #print "c : "+str(c).replace('frozenset([','{').replace('])','}')
-                    #print "c2 : "+str(c2).replace('frozenset([','{').replace('])','}')
-                    new_cycle = c.symmetric_difference(c2)
-                    cycles.add(new_cycle)
-                    cycle_already_done.add((c,c2))
-                    yield new_cycle
-        n -= 1
-
-
-#r"""
-#g = graphs.CompleteGraph(5)
-#g = graphs.PetersenGraph()
-#g = Graph()
-#g.add_vertices([1,2,3,4,5])
-#g.add_edges([(1,2), (2,3), (3,4), (4,5), (5,1), (1,3), (1,4)])
-#ac = all_cycle(g)
-#display_all_cycle(ac)
 """
-print "########################################"
-it = cycle_iterator(g)
-try:
-    while(True):
-        #print next(it)
-        print "### "+str(next(it)).replace('frozenset([','{').replace('])','}')
-except StopIteration:
-    print "No more cycles"
-finally:
-    del it
-    
+def main():
+	cycles = cycles_iterator(g4)
+	for i, c in enumerate(cycles):
+		print "{} : {}".format(i+1, c)
+
+main()
 """
