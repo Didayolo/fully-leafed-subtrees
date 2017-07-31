@@ -9,42 +9,6 @@ def is_back_edge(edge, seen):
 	return edge[_sage_const_1 ] in seen
 
 
-def recursive_cycles_iterator(g):
-	def slave(g, acc):
-		edges = g.edges()
-		cut_edges = g.bridges()
-
-		seen = set()
-
-		print "##### RECURSIVE CALL #####"
-		if(len(edges) > _sage_const_2 ): #no cycles with less than 3 edges
-			if len(cut_edges) > _sage_const_0 : #there is at least one articulation point
-				new_edges = filter(lambda x: x not in cut_edges, edges)
-				sccs = g.subgraph(edges=new_edges)
-				slave(sccs, acc)
-			else:
-				for e in edges:
-					if is_back_edge(e, seen):
-						print "{} is a back edge".format(e)
-						edges_copy = g.edges()
-						edges_copy.remove(e)
-						g2 = g.subgraph(edges=edges_copy)
-						cycles = g2.all_paths(e[_sage_const_0 ], e[_sage_const_1 ])
-						print "### cycles : {}".format(cycles)
-						for c in cycles:
-							c = sorted(c)
-							#yield c
-							acc.add(tuple(c))
-						slave(g2, acc)
-					seen.add(e[_sage_const_1 ])
-			return acc
-		else:
-			return set()
-
-
-	return slave(g, set())
-
-
 def cycles_iterator(g):
 	seen = set()
 	same_cycle_different_paths = set()
@@ -58,7 +22,7 @@ def cycles_iterator(g):
 	for cc in ccs:
 		cc_edges = [e for e in g.edges() if e[_sage_const_0 ] in cc and e[_sage_const_1 ] in cc] #useful if ccs has more than 1 cc
 		for e in cc_edges:
-			if is_back_edge(e, seen): #faster without function ??
+			if e[_sage_const_1 ] in seen:
 				g.delete_edge(e)
 				cycles = g.all_paths(e[_sage_const_0 ], e[_sage_const_1 ])
 
@@ -70,46 +34,6 @@ def cycles_iterator(g):
 				cycles = []
 			seen.add(e[_sage_const_1 ])
 
-		#there are more than 2 edges and at least one cycle found, either way there are no more cycles
-		#if(len(g.edges()) > 2 and cycles != []): 
-		#	ccs.append(g.vertices())
-		#	seen = set()
-
-
-
-def naive_all_cycles_iterator(g):
-	"""
-		A AMELIORER :
-			-passer des composantes connexes a la fonction au lieu d'un cycle ?
-			-faire un générateur directement (sans passer par un set anti-doublon et un tri)
-	"""
-	edges = g.edges(labels=False)
-	#print "edges : {}".format(edges)
-	seen = set()
-	ret = set()
-
-	for edge in edges: 
-		if g.is_cut_edge(edge):
-			#print "{} is a cut edge".format(edge)
-			edges_copy = g.edges(labels=False)
-			edges_copy.remove(edge)
-			g2 = g.subgraph(edges=edges_copy)
-			naive_all_cycles_iterator(g2)
-
-		elif is_back_edge(edge, seen):
-			#print "{} is a back edge".format(edge)
-			edges_copy = g.edges(labels=False)
-			edges_copy.remove(edge)
-			g2 = g.subgraph(edges=edges_copy)
-			cycles = g2.all_paths(edge[_sage_const_0 ], edge[_sage_const_1 ])
-			for c in cycles:
-				c = sorted(c)
-				#print c
-				#yield c
-				ret.add(tuple(c))
-		seen.add(edge[_sage_const_1 ])
-
-	return ret
 
 
 ########## testing graphs ##########
@@ -126,17 +50,17 @@ g3.add_vertices(range(_sage_const_1 ,_sage_const_18 ))
 g3.add_edges([(_sage_const_1 , _sage_const_2 ),(_sage_const_1 , _sage_const_3 ),(_sage_const_2 , _sage_const_3 ),(_sage_const_3 , _sage_const_4 ),(_sage_const_4 , _sage_const_5 ),(_sage_const_4 , _sage_const_11 ),(_sage_const_5 , _sage_const_6 ),(_sage_const_5 , _sage_const_13 ),(_sage_const_5 , _sage_const_15 ),(_sage_const_6 , _sage_const_7 ),(_sage_const_7 , _sage_const_8 ),(_sage_const_8 , _sage_const_9 ),(_sage_const_9 , _sage_const_10 ),(_sage_const_10 , _sage_const_11 ),(_sage_const_12 , _sage_const_13 ),(_sage_const_12 , _sage_const_14 ),(_sage_const_13 , _sage_const_14 ),(_sage_const_15 , _sage_const_16 ),(_sage_const_15 , _sage_const_17 ),(_sage_const_16 , _sage_const_17 )])
 g3.add_edges([(_sage_const_6 ,_sage_const_10 ), (_sage_const_7 ,_sage_const_10 )])
 
-g4 = graphs.CompleteGraph(_sage_const_9 )
+g4 = graphs.CompleteGraph(_sage_const_10 )
 
 g5 = graphs.PetersenGraph()
 
 def test1():
-	cycles = cycles_iterator(g5)
+	cycles = cycles_iterator(g4)
 	for i, c in enumerate(cycles):
 		print "{} : {}".format(i+_sage_const_1 , c)
 
 def test2():
-	cycles = naive_all_cycles_iterator(g5)
+	cycles = performances(g4)
 	for i, c in enumerate(cycles):
 		print "{} : {}".format(i+_sage_const_1 , c)
 
