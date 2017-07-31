@@ -34,6 +34,34 @@ b3 = [] # + 3 rotations
 b4 = [] # + 3 rotations
 # on verra plus tard pour ceux là
 
+def rotation(pattern):
+# a commenter
+    tab1 = ['000', '001', '011', '010']
+    tab2 = ['100', '101', '111', '110']
+    rotated = []
+    for v in pattern:
+        if v in tab1:
+            i = tab1.index(v)
+            rotated.append(tab1[i-1])
+        if v in tab2:
+            i = tab2.index(v)
+            rotated.append(tab2[i-1])
+    return rotated
+
+def generate_patterns(roots):
+# a commenter
+    patterns = []
+    for r in roots:
+        for i in range(len(r)):
+            
+            p = set(r[:i] + r[i+1:])
+            
+            for _ in range(3): # 3 rotations
+                if not p in patterns:
+                    patterns.append(p)
+                p = set(rotation(p))
+    return patterns
+
 def selected_patterns_to_vertices(selected_patterns, k):
 # on part d'une liste de patterns 
 # et on renvoie l'ensemble des sommets selectionnes
@@ -84,6 +112,65 @@ def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
 # on ajoute des patterns voisins tant qu'on obtient un arbre
 # sinon on revient et on tente d'autres patterns, etc.
 
+def solve_bt_iterative(k):
+# version iterative
+# voir solve_bt
+
+    if k < 4:
+        print("k has to be greater than 3")
+        return Graph()
+
+    selected_patterns = [roots[0]] 
+    bt = False
+
+    cubes = 2**(k-3)
+    g = graphs.CubeGraph(k)
+
+    vertices = selected_patterns_to_vertices(selected_patterns, k)
+    t = g.subgraph(vertices)
+   
+    while True:
+    
+        vertices = selected_patterns_to_vertices(selected_patterns, k)
+        t = g.subgraph(vertices)
+            
+        if t.is_tree() and (not bt): # ok
+
+            if len(selected_patterns) == cubes: 
+                # solutions !
+                t.show()
+                print(t.order())
+                print(t.vertices())
+                print("\n")
+                return t
+
+            else: # ajout
+                selected_patterns.append(patterns[0])
+                bt = False
+
+        else: # changement
+
+            last_try = selected_patterns[-1]
+            if len(selected_patterns) == 1: # root
+                i = roots.index(last_try)
+                if i == (len(roots) - 1): # end
+                    return Graph()
+                else:
+                    selected_patterns = [roots[i+1]] # next root
+                    bt = False
+            
+            else: # pattern
+                i = patterns.index(last_try)
+                if  (len(patterns) - 1): # last pattern
+                # backtrack
+                    selected_patterns = selected_patterns[:-1]
+                    bt = True
+                else: #changement
+                    selected_patterns[-1] = patterns[i+1]
+                    bt = False
+
+  
+
 def solve_bt(k):
 
     if k < 4:
@@ -115,13 +202,9 @@ def solve_bt(k):
             
             else: # on veux ajouter un pattern
                 #roots et patterns 
-                if len_sp == 0: # on choisit une racine
-                    # INUTILE, len_sp est toujours > 0 !
-                    selected_patterns.append(roots[0])
-                    return slv_bt(k, selected_patterns, False)
-                else: # on choisit un pattern
-                    selected_patterns.append(patterns[0])
-                    return slv_bt(k, selected_patterns, False)
+                # on choisit un pattern
+                selected_patterns.append(patterns[0])
+                return slv_bt(k, selected_patterns, False)
 
         else: # il faut changer le dernier pattern
             last_try = selected_patterns[len_sp - 1] # haut de la pile 
@@ -145,6 +228,8 @@ def solve_bt(k):
                     return slv_bt(k, selected_patterns, False)
 
     return slv_bt(k, [roots[0]], False)
+
+# faire une version iterative du backtracking !
 
 # exemples d'utilisations
 # solve(6)
