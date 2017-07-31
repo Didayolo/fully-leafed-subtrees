@@ -4,6 +4,7 @@ from itertools import combinations
 
 def solve(k):
 # generer les solutions
+# renvoie un iterateur
     l = 2**(k-1) + 1 
     g = graphs.CubeGraph(k)
     it = combinations(g.vertices(), l) 

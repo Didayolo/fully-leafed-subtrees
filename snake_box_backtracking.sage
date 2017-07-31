@@ -28,6 +28,7 @@ def voisin_suivant(sommet, i):
     # (000,0) -> 100    (100, 1) -> 010    (010, 2) -> 001
     return sommet[:i] + str((1 - int(sommet[i])) ) + sommet[i+1:]
     
+# faire une version iterative !
 
 def solve(k, l):
 

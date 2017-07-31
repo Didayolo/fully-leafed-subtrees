@@ -103,3 +103,4 @@ def solve(g):
     except:
         print("Impossible to solve.")
 
+

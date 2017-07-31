@@ -71,7 +71,6 @@ def solve_iterative(k, l):
                     tab.append(0)
 
                 tab[-2] += 1
-                bt = False
 
         else: # c'est chaud
             
@@ -95,7 +94,7 @@ def solve_iterative(k, l):
                 bt = False
                     
 
-def solve(k, l):
+def solve_recursive(k, l):
 
     def slv(k, g, l, selected, tab, bt):
         # resolution avec backtracking

@@ -85,3 +85,4 @@ def solve(g, k):
         except:
             print("Impossible to solve.")
 
+

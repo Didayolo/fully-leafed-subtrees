@@ -33,6 +33,7 @@ b2 = [] # + 3 rotations
 b3 = [] # + 3 rotations 
 b4 = [] # + 3 rotations
 # on verra plus tard pour ceux là
+# de toute facon on les genere
 
 def rotation(pattern):
 # a commenter
@@ -146,7 +147,6 @@ def solve_bt_iterative(k):
 
             else: # ajout
                 selected_patterns.append(patterns[0])
-                bt = False
 
         else: # changement
 
@@ -161,7 +161,7 @@ def solve_bt_iterative(k):
             
             else: # pattern
                 i = patterns.index(last_try)
-                if  (len(patterns) - 1): # last pattern
+                if i == (len(patterns) - 1): # last pattern
                 # backtrack
                     selected_patterns = selected_patterns[:-1]
                     bt = True
@@ -171,7 +171,7 @@ def solve_bt_iterative(k):
 
   
 
-def solve_bt(k):
+def solve_bt_recursive(k):
 
     if k < 4:
         print("k has to be greater than 3")
@@ -207,7 +207,7 @@ def solve_bt(k):
                 return slv_bt(k, selected_patterns, False)
 
         else: # il faut changer le dernier pattern
-            last_try = selected_patterns[len_sp - 1] # haut de la pile 
+            last_try = selected_patterns[-1] # haut de la pile 
             if len_sp == 1: # il s'agissait d'une racine
                 i = roots.index(last_try)
                 if i == (len(roots) - 1): # plus de changements possibles
