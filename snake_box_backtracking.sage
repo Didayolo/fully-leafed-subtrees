@@ -29,6 +29,81 @@ def voisin_suivant(sommet, i):
     return sommet[:i] + str((1 - int(sommet[i])) ) + sommet[i+1:]
     
 # faire une version iterative !
+def solve_iterative(k, l):
+    
+    g = graphs.CubeGraph(k)
+    selected = [g.vertices()[0]]
+    tab = [0]
+    
+    bt = False
+    deja_vu = False
+    tree = True
+
+    while True:
+
+        len_pile = len(selected)
+
+        last_try = selected[len_pile - 1]
+        i = tab[len_pile - 1]
+        last_i = tab[len_pile - 2]
+        
+        deja_vu = last_try in selected[:-1]
+        tree = True
+        for x in range(k):
+            if voisin_suivant(last_try, x) in selected[:-2]:
+                # on a un cycle
+                tree = False
+
+        if (tree) and (not bt) and (not deja_vu): # dans la course
+        
+            if len(selected) == l: # solution
+                t = g.subgraph(selected)
+                print("Problem solved")
+                t.show()
+                print(t.order())
+                print(t.vertices())
+                print("\n")
+                return t 
+                # yield t
+
+            else: # ajout
+
+                voisin = voisin_suivant(last_try, i)
+                selected.append(voisin)
+
+                if i == 0:
+                    tab.append(1)
+
+                else:
+                    tab.append(0)
+
+                tab[len_pile - 1] += 1 # on increment le precedent
+                # len_pile n'a pas ete incremente puisque sa valeur etait fixe
+                bt = False
+
+        else: # changement
+
+            last_i = tab[len_pile - 2]
+            if last_i == k: # plus de changement, backtrack
+
+                selected = selected[:-1]
+                tab = tab[:-1]
+                if len(selected) == 1: # end
+                    print("Problem has no solution")
+                    return Graph()
+                
+                else: # on continue
+                    bt = True
+
+            else: # changement
+
+                last_last_try = selected[len_pile - 2]
+                voisin = voisin_suivant(last_last_try, last_i)
+                selected[-1] = voisin
+                tab[-2] += 1 
+                tab[-1] = 0
+                bt = False
+
 
 def solve(k, l):
 

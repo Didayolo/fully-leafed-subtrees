@@ -35,6 +35,12 @@ b4 = [] # + 3 rotations
 # on verra plus tard pour ceux là
 # de toute facon on les genere
 
+# 4 composantes connexes
+d0 = ['000', '011', '110', '101']
+d1 = rotation(d0)
+# meme avec ceux la en plus, pas de soluions a k = 7 et l = 65
+# si tous les patterns y sont, on peux sans doute demontrer que 65 est une borne superieur pour k = 7
+
 def rotation(pattern):
 # a commenter
     tab1 = ['000', '001', '011', '010']
@@ -105,6 +111,7 @@ def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
                 print(t.vertices())
                 #print(t.edges(labels=False)) 
                 print("\n")
+                # yield t
 
     print(str(solutions) + " solutions trouvees.")
 
@@ -144,6 +151,7 @@ def solve_bt_iterative(k):
                 print(t.vertices())
                 print("\n")
                 return t
+                # yield t
 
             else: # ajout
                 selected_patterns.append(patterns[0])
@@ -199,6 +207,7 @@ def solve_bt_recursive(k):
                 print(t.vertices())
                 print("\n")
                 return t
+                # yield t
             
             else: # on veux ajouter un pattern
                 #roots et patterns 
