@@ -3,35 +3,34 @@
 
 
 def cycles_iterator(g):
-	seen = set()
-	same_cycle_different_paths = set()
+    seen = set()
+    same_cycle_different_paths = set()
 
-	#decomposition into biconnected components
-	cut_edges = g.bridges()
-	if len(cut_edges) > 0:
-		#there is at least one articulation point
-		g.delete_edges(cut_edges)
+    #Decomposition into biconnected components
+    cut_edges = g.bridges()
+    if len(cut_edges) > 0:
+        #There is at least one articulation point
+        g.delete_edges(cut_edges)
 
-	ccs = g.connected_components() #fill the connected components list
+    ccs = g.connected_components() #fill the connected components list
 
-	#for each connected component, we extract simple cycles by removing back edges
-	#and listing all path from start to end of the removed edge
-	for cc in ccs:
-		cc_edges = [e for e in g.edges() if e[0] in cc and e[1] in cc]
-		for e in cc_edges:
-			if e[1] in seen: #e is a back edge
-				g.delete_edge(e)
-				cycles = g.all_paths(e[0], e[1])
+    #For each connected component, we extract simple cycles by removing back edges
+    #and listing all path from start to end of the removed edge
+    for cc in ccs:
+        for e in g.edges():
+            if e[1] in seen: #e is a back edge
+                g.delete_edge(e)
+                cycles = g.all_paths(e[0], e[1])
 
-				#there are duplicates for some simple cycles,
-				#there can be 2 different paths for the same cycle
-				for c in cycles:
-					sorted_cycle = tuple(sorted(c))
-					if sorted_cycle not in same_cycle_different_paths:
-						same_cycle_different_paths.add(sorted_cycle)
-						yield c
-				cycles = []
-			seen.add(e[1])
+                #There are duplicates for some simple cycles,
+                #there can be 2 different paths for the same cycle
+                for c in cycles:
+                    sorted_cycle = tuple(sorted(c))
+                    if sorted_cycle not in same_cycle_different_paths:
+                        same_cycle_different_paths.add(sorted_cycle)
+                        yield c
+                cycles = []
+            seen.add(e[1])
 
 
 
@@ -55,9 +54,9 @@ g5 = graphs.PetersenGraph()
 
 """
 def main():
-	cycles = cycles_iterator(g4)
-	for i, c in enumerate(cycles):
-		print "{} : {}".format(i+1, c)
+    cycles = cycles_iterator(g4)
+    for i, c in enumerate(cycles):
+        print "{} : {}".format(i+1, c)
 
 main()
 """
