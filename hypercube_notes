@@ -1,4 +1,4 @@
-Nouveau game :
+## A essayer :
 
 1. Enumerer toutes les solutions pour chaque k (tree_box_patterns -> solve_bt_iterative)
 
@@ -7,8 +7,18 @@ Nouveau game :
 3. Generaliser une construction
 
 
+## Generation des racines:
 
-Idee vieille
+Pour k = 3 (pour commencer) :
+
+1. Generer les solutions du probleme
+2. Utiliser la rotation pour supprimer les doublons par symetrie
+3. Il y a 5 racines restantes normalement
+
+Ainsi, tous les patterns seront trouves par le programme -> possibilite de generaliser
+
+
+## Idees et notes vieilles:
 
 Prendre le sous arbre max (dimension n)
 
