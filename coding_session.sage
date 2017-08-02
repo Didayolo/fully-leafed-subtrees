@@ -15,4 +15,4 @@ def tree_iterator(g):
 
 g = graphs.PetersenGraph()
 it = tree_iterator(g)
-next(it).show()
+#next(it).show()

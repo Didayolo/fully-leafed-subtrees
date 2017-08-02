@@ -2,44 +2,12 @@
 
 from itertools import product
 from math import log
+load("tree_box_brute.sage")
 
 # On separe les sous-cubes en patterns
 # On essaie de les combiner pour obtenir un arbre
 # On peut combiner en essayant tout ou par backtracking
 # En gros, prend le probleme de plus haut
-
-# racines
-r0 = ['000', '100', '110', '111', '011']
-r1 = ['000', '001', '011', '111', '110']
-r2 = ['000', '001', '101', '111', '110']
-r3 = ['000', '100', '001', '011', '111']
-# on ne prend pas les rotations en compte car c'est la racine
-roots = [r0, r1, r2, r3]
-
-# patterns avec 2 composantes connexes
-p00 = ['010', '011', '100', '101'] # + 3 rotations
-p01 = ['110', '100', '011', '001']
-p02 = ['110', '111', '000', '001']
-p03 = ['111', '101', '010', '000']
-p10 = ['010', '110', '101', '001'] # + 1 rotation
-p11 = ['000', '100', '111', '011']
-
-patterns = [p00, p01, p02, p03, p10, p11]
-
-# patterns avec 1 composante connexe
-b0 = [] # + 3 rotations
-b1 = [] # + 3 rotations
-b2 = [] # + 3 rotations
-b3 = [] # + 3 rotations 
-b4 = [] # + 3 rotations
-# on verra plus tard pour ceux là
-# de toute facon on les genere
-
-# 4 composantes connexes
-d0 = ['000', '011', '110', '101']
-d1 = rotation(d0)
-# meme avec ceux la en plus, pas de soluions a k = 7 et l = 65
-# si tous les patterns y sont, on peux sans doute demontrer que 65 est une borne superieur pour k = 7
 
 def rotation(pattern):
 # a commenter
@@ -61,12 +29,15 @@ def generate_patterns(roots):
     for r in roots:
         for i in range(len(r)):
             
-            p = set(r[:i] + r[i+1:])
-            
+            p = set(r[:i] + r[i+1:]) # on genere un pattern en enlevant un sommet a un racine
+                       
+            if not p in patterns:
+                patterns.append(p) # on l'ajoute
+ 
             for _ in range(3): # 3 rotations
+                p = set(rotation(p))
                 if not p in patterns:
                     patterns.append(p)
-                p = set(rotation(p))
     return patterns
 
 def selected_patterns_to_vertices(selected_patterns, k):
@@ -85,7 +56,7 @@ def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
 
     if k < 4:
         print("k has to be greater than 3")
-        return Graph()
+        yield Graph()
 
     g = graphs.CubeGraph(k)
     cubes = 2**(k-3)
@@ -106,12 +77,7 @@ def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
             t = g.subgraph(vertices)
             if(t.is_tree()): # une solution
                 solutions += 1
-                t.show()
-                print(t.order())
-                print(t.vertices())
-                #print(t.edges(labels=False)) 
-                print("\n")
-                # yield t
+                yield t
 
     print(str(solutions) + " solutions trouvees.")
 
@@ -124,9 +90,12 @@ def solve_bt_iterative(k):
 # version iterative
 # voir solve_bt
 
+    solution = True
+    
     if k < 4:
         print("k has to be greater than 3")
-        return Graph()
+        solution = False
+        #return Graph()
 
     selected_patterns = [roots[0]] 
     bt = False
@@ -137,21 +106,17 @@ def solve_bt_iterative(k):
     vertices = selected_patterns_to_vertices(selected_patterns, k)
     t = g.subgraph(vertices)
    
-    while True:
+    while solution:
     
         vertices = selected_patterns_to_vertices(selected_patterns, k)
         t = g.subgraph(vertices)
             
         if t.is_tree() and (not bt): # ok
 
-            if len(selected_patterns) == cubes: 
-                # solutions !
-                t.show()
-                print(t.order())
-                print(t.vertices())
-                print("\n")
-                return t
-                # yield t
+            if len(selected_patterns) == cubes: # solution 
+                #return t
+                yield t
+                bt = True # test
 
             else: # ajout
                 selected_patterns.append(patterns[0])
@@ -162,7 +127,9 @@ def solve_bt_iterative(k):
             if len(selected_patterns) == 1: # root
                 i = roots.index(last_try)
                 if i == (len(roots) - 1): # end
-                    return Graph()
+                    #return Graph()
+                    solution = False
+
                 else:
                     selected_patterns = [roots[i+1]] # next root
                     bt = False
@@ -207,7 +174,6 @@ def solve_bt_recursive(k):
                 print(t.vertices())
                 print("\n")
                 return t
-                # yield t
             
             else: # on veux ajouter un pattern
                 #roots et patterns 
@@ -223,6 +189,7 @@ def solve_bt_recursive(k):
                     # pas de solutions
                     # plus de racines
                     return Graph()
+
                 else: # changement
                     selected_patterns = [roots[i+1]]
                     return slv_bt(k, selected_patterns, False)
@@ -238,8 +205,31 @@ def solve_bt_recursive(k):
 
     return slv_bt(k, [roots[0]], False)
 
-# faire une version iterative du backtracking !
 
-# exemples d'utilisations
-# solve(6)
-# solve_bt(5, [roots[0]], False)
+# racines
+# solution du probleme pour k = 3 (sans les rotations d'un meme schema)
+r0 = ['000', '100', '110', '111', '011']
+r1 = ['000', '001', '011', '111', '110']
+r2 = ['000', '001', '101', '111', '110']
+r3 = ['000', '100', '001', '011', '111']
+# on ne prend pas les rotations en compte car c'est la racine
+roots = [r0, r1, r2, r3]
+
+# Les patterns avec 1, 2 et 4 composantes connexes sont dans la generation
+
+# Il n'existe pas de patterns avec 3 composantes connexes
+# (Prouve avec tree_box_brute.sage dans find_forest())
+
+it = find_forest(4, 3) # 4 cc dans le cube k = 3
+d0 = next(it).vertices()
+#d0 = ['000', '011', '110', '101']
+d1 = rotation(d0)
+
+# meme avec ceux la en plus, pas de soluions a k = 7 et l = 65
+# si tous les patterns y sont, on peux sans doute demontrer que 65 est une borne superieur pour k = 7
+
+
+patterns = generate_patterns(roots)
+patterns.append(d0)
+patterns.append(d1)
+

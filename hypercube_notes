@@ -1,0 +1,20 @@
+Nouveau game :
+
+1. Enumerer toutes les solutions pour chaque k (tree_box_patterns -> solve_bt_iterative)
+
+2. Chercher les plus similaires d'un k à un autre (comparer la similarite des graphes)
+
+3. Generaliser une construction
+
+
+
+Idee vieille
+
+Prendre le sous arbre max (dimension n)
+
+Enlever un sommet (une arete) avant d'ajouter la dimension suivante (dimension n+1)
+
+Prendre moins de sommets pour faire un arbre a plusieurs dimensions bien large (cubiquement large) 
+
+Quels sont les maxs pour les petites dimensions ?
+Voir mail Elise
