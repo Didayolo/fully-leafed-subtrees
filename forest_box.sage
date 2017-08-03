@@ -1,5 +1,60 @@
 from itertools import combinations
 
+# A commenter
+
+# On explore l'hypercube de facon brute
+
+def find_forest(k, l):
+# methode brute
+# generer les solutions
+# renvoie un iterateur
+# foret de taille l dans l'hypercube de dimension k
+
+    g = graphs.CubeGraph(k)
+    it = combinations(g.vertices(), l) 
+
+    while True:
+    
+        t = g.subgraph(vertices=next(it))
+        
+        if t.is_forest():
+
+            #print('Vertices : ')
+            #print(t.vertices())
+            #print('Edges : ')
+            #print(t.edges(labels=False))
+            #t.show()
+            yield t
+
+def find_forest_cc(k, cc_nb):
+    # cherche une foret de cc_nb composantes connexe dans un hypercube de dimension k
+    g = graphs.CubeGraph(k)
+    l = 2**(k-1) # moitie des sommets
+    it = combinations(g.vertices(), l)
+
+    while True:
+        
+        sg = g.subgraph(vertices=next(it))
+        
+        if sg.is_forest() and (sg.connected_components_number() == cc_nb):
+            
+            yield sg
+
+
+def find_forest_n(k, l, cc_nb):
+    # cherche une foret de cc_nb composantes connexes et taille l dans un hypercube de dimension k
+    g = graphs.CubeGraph(k)
+    it = combinations(g.vertices(), l)
+
+    while True:
+        
+        sg = g.subgraph(vertices=next(it))
+        
+        if sg.is_forest() and (sg.connected_components_number() == cc_nb):
+            
+            yield sg
+from itertools import combinations
+
 # On explore l'hypercube
 # On veux toujours avoir un arbre au cours de la construction
 # Dans cette construction on veux tester tous les arbres
@@ -22,7 +77,7 @@ def voisin_suivant(sommet, i):
     return sommet[:i] + str((1 - int(sommet[i])) ) + sommet[i+1:]
     
 
-def solve_iterative(k, l):
+def find_forest_iterative(k, l):
     # version iterative
     # a commenter (meme fonctionnement que solve() )
 
@@ -41,19 +96,19 @@ def solve_iterative(k, l):
     while solution:
     
         deja_vu = selected[-1] in selected[:-1]
-        tree = True
+        forest = True
         count = 0
         for x in range(k):
             if voisin_suivant(selected[-1], x) in selected[:-1]:
                 count += 1
     
-        if count != 1:
-            tree = False
+        if count != 1: # presence d'un cycle
+            forest = False
 
-        if len(selected) == 1: ##
-            tree = True
+        if len(selected) == 1: ## inutile ?
+            forest = True
 
-        if (tree) and (not bt) and (not deja_vu):
+        if (forest) and (not bt) and (not deja_vu):
         # Dans la course
             if len(selected) == l: # solution trouvee
                 t = g.subgraph(selected)
@@ -82,7 +137,7 @@ def solve_iterative(k, l):
                 selected = selected[:-1]
                 tab = tab[:-1]
                 if len(selected) == 1: # fin
-                    print("Problem has no solution")
+                    #print("Problem has no solution")
                     solution = False
                     #return Graph()
                 else:
@@ -97,7 +152,7 @@ def solve_iterative(k, l):
                 bt = False
                     
 
-def solve_recursive(k, l):
+def find_forest_recursive(k, l):
 
     def slv(k, g, l, selected, tab, bt):
         # resolution avec backtracking
@@ -116,7 +171,7 @@ def solve_recursive(k, l):
         #print("tab : " + str(tab))
         
         deja_vu = last_try in selected[:-1]
-        tree = True        
+        forest = True        
 
         # plutot que t.is_tree()
         count = 0
@@ -127,12 +182,12 @@ def solve_recursive(k, l):
         if count != 1:
         # i > 1 on a un cycle
         # i < 1 on est pas connexe
-            tree = False
+            forest = False
         
         if len_pile == 1: # test debug
-            tree = True
+            forest = True
 
-        if (tree) and (not bt) and (not deja_vu): 
+        if (forest) and (not bt) and (not deja_vu): 
         # on est dans la course: arbre, pas de retour en arriere et 
         # le dernier sommet n'etait pas deja selectionne
             
@@ -170,7 +225,7 @@ def solve_recursive(k, l):
                 selected = selected[:-1]
                 tab = tab[:-1]
                 if len(selected) == 0: # end of movie
-                    print("Problem has no solution")
+                    #print("Problem has no solution")
                     return Graph()
                 else: # on continue
                     #tab[-2] = tab[-2] + 1 # on incremente i pour ne pas retenter idem

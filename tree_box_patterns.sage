@@ -2,43 +2,75 @@
 
 from itertools import product
 from math import log
-load("tree_box_brute.sage")
+load("forest_box.sage")
+load("tree_box.sage")
 
 # On separe les sous-cubes en patterns
 # On essaie de les combiner pour obtenir un arbre
 # On peut combiner en essayant tout ou par backtracking
 # En gros, prend le probleme de plus haut
 
-def rotation(pattern):
+#def rotation(pattern):
 # a commenter
-    tab1 = ['000', '001', '011', '010']
-    tab2 = ['100', '101', '111', '110']
-    rotated = []
-    for v in pattern:
-        if v in tab1:
-            i = tab1.index(v)
-            rotated.append(tab1[i-1])
-        if v in tab2:
-            i = tab2.index(v)
-            rotated.append(tab2[i-1])
-    return rotated
+# utiliser les automorphismes plutot que des rotations
+#    tab1 = ['000', '001', '011', '010']
+#    tab2 = ['100', '101', '111', '110']
+#    rotated = []
+#    for v in pattern:
+#        if v in tab1:
+#            i = tab1.index(v)
+#            rotated.append(tab1[i-1])
+#        if v in tab2:
+#            i = tab2.index(v)
+#            rotated.append(tab2[i-1])
+#    return rotated
 
-def generate_patterns(roots):
+#def generate_patterns_from_roots(roots):
 # a commenter
+#    patterns = []
+#    for r in roots:
+#        for i in range(len(r)):
+#            
+#            p = set(r[:i] + r[i+1:]) # on genere un pattern en enlevant un sommet a un racine
+#                       
+#            if not p in patterns:
+#                patterns.append(p) # on l'ajoute
+# 
+#            for _ in range(3): # 3 rotations
+#                p = set(rotation(p))
+#                if not p in patterns:
+#                    patterns.append(p)
+#    return patterns
+
+def take_off_vertex(vertices):
+    # iterateur qui renvoie le graphe avec un sommet de moins
+    # vertices est une liste de sommet
+    for i in range(len(vertices)):
+        yield (vertices[:i] + vertices[i+1:])
+    
+
+def generate_roots(k):
+    # toutes les solutions optimales de grand arbre dans l'hypercube de dimension k
+    # modifier pour faire a automorphisme pres (pour k = 3 on veux 5 schemas differents)
+    roots = []
+    l = 2*(k-1) + 1
+    solutions = list(find_tree_iterative(k, l))
+    for s in solutions:
+        roots.append(s.vertices())
+
+    return roots
+
+
+def generate_patterns(k):
+    # toutes les forets dans le cube dimension k de taille 2**(k-1)
     patterns = []
-    for r in roots:
-        for i in range(len(r)):
-            
-            p = set(r[:i] + r[i+1:]) # on genere un pattern en enlevant un sommet a un racine
-                       
-            if not p in patterns:
-                patterns.append(p) # on l'ajoute
- 
-            for _ in range(3): # 3 rotations
-                p = set(rotation(p))
-                if not p in patterns:
-                    patterns.append(p)
+    l = 2**(k-1)
+    forests = list(find_forest(k, l))
+    for f in forests:
+        patterns.append(f.vertices())
+
     return patterns
+
 
 def selected_patterns_to_vertices(selected_patterns, k):
 # on part d'une liste de patterns 
@@ -86,7 +118,7 @@ def solve(k): # avec k > 3 (car les patterns sont dans des Q3)
 # on ajoute des patterns voisins tant qu'on obtient un arbre
 # sinon on revient et on tente d'autres patterns, etc.
 
-def solve_bt_iterative(k):
+def solve_iterative(k):
 # version iterative
 # voir solve_bt
 
@@ -145,8 +177,7 @@ def solve_bt_iterative(k):
                     bt = False
 
   
-
-def solve_bt_recursive(k):
+def solve_recursive(k):
 
     if k < 4:
         print("k has to be greater than 3")
@@ -208,28 +239,30 @@ def solve_bt_recursive(k):
 
 # racines
 # solution du probleme pour k = 3 (sans les rotations d'un meme schema)
-r0 = ['000', '100', '110', '111', '011']
-r1 = ['000', '001', '011', '111', '110']
-r2 = ['000', '001', '101', '111', '110']
-r3 = ['000', '100', '001', '011', '111']
+# a generer et enlever automorphismes 
+#r0 = ['000', '100', '110', '111', '011']
+#r1 = ['000', '001', '011', '111', '110']
+#r2 = ['000', '001', '101', '111', '110']
+#r3 = ['000', '100', '001', '011', '111']
 # on ne prend pas les rotations en compte car c'est la racine
-roots = [r0, r1, r2, r3]
+#roots = [r0, r1, r2, r3]
 
 # Les patterns avec 1, 2 et 4 composantes connexes sont dans la generation
 
 # Il n'existe pas de patterns avec 3 composantes connexes
-# (Prouve avec tree_box_brute.sage dans find_forest())
+# (Prouve avec forest_box.sage dans find_forest_cc())
 
-it = find_forest(4, 3) # 4 cc dans le cube k = 3
-d0 = next(it).vertices()
-#d0 = ['000', '011', '110', '101']
-d1 = rotation(d0)
+#it = find_forest_cc(3, 4) # 4 cc dans le cube k = 3
+#d0 = next(it).vertices()
+##d0 = ['000', '011', '110', '101']
+#d1 = rotation(d0)
 
 # meme avec ceux la en plus, pas de soluions a k = 7 et l = 65
 # si tous les patterns y sont, on peux sans doute demontrer que 65 est une borne superieur pour k = 7
 
+#patterns = generate_patterns_from_roots(roots)
+#patterns.append(set(d0))
+#patterns.append(set(d1))
 
-patterns = generate_patterns(roots)
-patterns.append(d0)
-patterns.append(d1)
-
+roots = generate_roots(3)
+patterns = generate_patterns(3)
