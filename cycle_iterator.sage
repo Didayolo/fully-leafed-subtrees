@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ####### D'après l'article : https://arxiv.org/pdf/1205.2766.pdf #######
-
+import numpy as np
 
 def cycles_iterator(g):
     seen = set()
@@ -12,7 +12,7 @@ def cycles_iterator(g):
         #There is at least one articulation point
         g.delete_edges(cut_edges)
 
-    ccs = g.connected_components() #fill the connected components list
+    ccs = np.array(g.connected_components()) #fill the connected components list
 
     #For each connected component, we extract simple cycles by removing back edges
     #and listing all path from start to end of the removed edge
@@ -20,7 +20,7 @@ def cycles_iterator(g):
         for e in g.edges():
             if e[1] in seen: #e is a back edge
                 g.delete_edge(e)
-                cycles = g.all_paths(e[0], e[1])
+                cycles = np.array(g.all_paths(e[0], e[1]))
 
                 #There are duplicates for some simple cycles,
                 #there can be 2 different paths for the same cycle
@@ -48,7 +48,7 @@ g3.add_vertices(range(1,18))
 g3.add_edges([(1, 2),(1, 3),(2, 3),(3, 4),(4, 5),(4, 11),(5, 6),(5, 13),(5, 15),(6, 7),(7, 8),(8, 9),(9, 10),(10, 11),(12, 13),(12, 14),(13, 14),(15, 16),(15, 17),(16, 17)])
 g3.add_edges([(6,10), (7,10)])
 
-g4 = graphs.CompleteGraph(10)
+g4 = graphs.CompleteGraph(11)
 
 g5 = graphs.PetersenGraph()
 
