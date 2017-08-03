@@ -26,14 +26,19 @@ def solve_iterative(k, l):
     # version iterative
     # a commenter (meme fonctionnement que solve() )
 
+    # ATTENTION
+    # Bug actuellement (version iterateur qui renvoie toutes les solutions)
+
     g = graphs.CubeGraph(k)
     vertices = g.vertices()
     selected = [vertices[0]]
     tab = [1]
     
     bt = False
-    
-    while True: #not solved:
+   
+    solution = True
+ 
+    while solution:
     
         deja_vu = selected[-1] in selected[:-1]
         tree = True
@@ -50,15 +55,12 @@ def solve_iterative(k, l):
 
         if (tree) and (not bt) and (not deja_vu):
         # Dans la course
-            if len(selected) == l:
-                # solution trouvee
+            if len(selected) == l: # solution trouvee
                 t = g.subgraph(selected)
-                print("Problem solved")
-                t.show()
-                print(t.order())
-                print(t.vertices())
-                print("\n")
-                return t
+                #return t
+                yield t
+                bt = True
+                #tab[-1] += 1
 
             else: # ajout
                 i = tab[-1]
@@ -81,7 +83,8 @@ def solve_iterative(k, l):
                 tab = tab[:-1]
                 if len(selected) == 1: # fin
                     print("Problem has no solution")
-                    return Graph()
+                    solution = False
+                    #return Graph()
                 else:
                     bt = True
                 
