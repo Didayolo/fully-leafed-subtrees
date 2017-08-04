@@ -16,17 +16,27 @@ def cycles_iterator(g):
         #There is at least one articulation point
         g.delete_edges(cut_edges)
 
-    ccs = g.connected_components() #fill the connected components list
-    #ccs = np.array(g.connected_components())
+    ccs = np.array(g.connected_components()) #fill the connected components list
+
+    #Edges list for each cc
+    #Peut-être mieux a faire ?
+    cc_edges = [[] * len(ccs)]
+    for e in g.edges():
+        for i, cc in enumerate(ccs):
+            if e[_sage_const_0 ] in cc:
+                cc_edges[i].append(e)
 
     #For each connected component, we extract simple cycles by removing back edges
     #and listing all path from start to end of the removed edge
-    for cc in ccs:
-        for e in g.edges():
+    for i, cc in enumerate(ccs):
+        #sg = g.subgraph(edges=cc_edges[i]) #ou graphe directement ?
+        sg = Graph()
+        sg.add_edges(cc_edges[i])
+        for e in cc_edges[i]:
             if e[_sage_const_1 ] in seen: #e is a back edge
                 g.delete_edge(e)
-                cycles = g.all_paths(e[_sage_const_0 ], e[_sage_const_1 ])
-                #cycles = np.array(g.all_paths(e[0], e[1]))
+                sg.delete_edge(e)
+                cycles = np.array(sg.all_paths(e[_sage_const_0 ], e[_sage_const_1 ]))
 
                 #There are duplicates for some simple cycles,
                 #there can be 2 different paths for the same cycle
@@ -35,7 +45,6 @@ def cycles_iterator(g):
                     if sorted_cycle not in same_cycle_different_paths:
                         same_cycle_different_paths.add(sorted_cycle)
                         yield c
-                cycles = []
             seen.add(e[_sage_const_1 ])
 
 
@@ -54,7 +63,7 @@ g3.add_vertices(range(_sage_const_1 ,_sage_const_18 ))
 g3.add_edges([(_sage_const_1 , _sage_const_2 ),(_sage_const_1 , _sage_const_3 ),(_sage_const_2 , _sage_const_3 ),(_sage_const_3 , _sage_const_4 ),(_sage_const_4 , _sage_const_5 ),(_sage_const_4 , _sage_const_11 ),(_sage_const_5 , _sage_const_6 ),(_sage_const_5 , _sage_const_13 ),(_sage_const_5 , _sage_const_15 ),(_sage_const_6 , _sage_const_7 ),(_sage_const_7 , _sage_const_8 ),(_sage_const_8 , _sage_const_9 ),(_sage_const_9 , _sage_const_10 ),(_sage_const_10 , _sage_const_11 ),(_sage_const_12 , _sage_const_13 ),(_sage_const_12 , _sage_const_14 ),(_sage_const_13 , _sage_const_14 ),(_sage_const_15 , _sage_const_16 ),(_sage_const_15 , _sage_const_17 ),(_sage_const_16 , _sage_const_17 )])
 g3.add_edges([(_sage_const_6 ,_sage_const_10 ), (_sage_const_7 ,_sage_const_10 )])
 
-g4 = graphs.CompleteGraph(_sage_const_11 )
+g4 = graphs.CompleteGraph(_sage_const_10 )
 
 g5 = graphs.PetersenGraph()
 
