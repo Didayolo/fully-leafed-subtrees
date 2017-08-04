@@ -16,7 +16,7 @@ def cycles_iterator(g):
 
     #Edges list for each cc
     #Peut-être mieux a faire ?
-    cc_edges = [[] * len(ccs)]
+    cc_edges = [[] for i in range(len(ccs))]
     for e in g.edges():
         for i, cc in enumerate(ccs):
             if e[0] in cc:
@@ -30,7 +30,7 @@ def cycles_iterator(g):
             if e[1] in seen: #e is a back edge
                 g.delete_edge(e)
                 sg.delete_edge(e)
-                cycles = np.array(sg.all_paths(e[0], e[1]))
+                cycles = sg.all_paths(e[0], e[1])
 
                 #There are duplicates for some simple cycles,
                 #there can be 2 different paths for the same cycle

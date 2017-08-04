@@ -25,13 +25,12 @@ def cycles_iterator(g):
         for i, cc in enumerate(ccs):
             if e[_sage_const_0 ] in cc:
                 cc_edges[i].append(e)
+    cc_edges = np.array(cc_edges)
 
     #For each connected component, we extract simple cycles by removing back edges
     #and listing all path from start to end of the removed edge
     for i, cc in enumerate(ccs):
-        #sg = g.subgraph(edges=cc_edges[i]) #ou graphe directement ?
-        sg = Graph()
-        sg.add_edges(cc_edges[i])
+        sg = g.subgraph(edges=cc_edges[i])
         for e in cc_edges[i]:
             if e[_sage_const_1 ] in seen: #e is a back edge
                 g.delete_edge(e)
