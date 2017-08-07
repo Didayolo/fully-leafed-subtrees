@@ -114,7 +114,7 @@ def solve_iterative(k):
         if t.is_forest() and (not bt): # ok
 
             if len(selected_patterns) == cubes: # solution 
-                #return t
+                
                 yield t
                 bt = True # test
 

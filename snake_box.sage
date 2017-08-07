@@ -7,7 +7,7 @@ from itertools import combinations
 
 # (iterateur ?)
 
-def afficher(g):
+def display(g):
 # fonction basique d'affichage d'un graphe
 # utile pour debugger
     print('Vertices : ')

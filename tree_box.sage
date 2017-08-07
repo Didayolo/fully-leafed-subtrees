@@ -22,8 +22,6 @@ def find_tree(k):
             #t.show()
             yield t
 
-from itertools import combinations
-
 # On explore l'hypercube
 # On veux toujours avoir un arbre au cours de la construction
 # Dans cette construction on veux tester tous les arbres
@@ -31,7 +29,7 @@ from itertools import combinations
 
 # (iterateur ?)
 
-def afficher(g):
+def display(g):
 # fonction basique d'affichage d'un graphe
 # utile pour debugger
     print('Vertices : ')
@@ -41,17 +39,18 @@ def afficher(g):
     g.show()
 
 
-def voisin_suivant(sommet, i):
+def next_neighbor(sommet, i):
     # (000,0) -> 100    (100, 1) -> 010    (010, 2) -> 001
     return sommet[:i] + str((1 - int(sommet[i])) ) + sommet[i+1:]
     
 
 def find_tree_iterative(k, l):
     # version iterative
-    # a commenter (meme fonctionnement que solve() )
+    # a commenter (meme fonctionnement que find_tree_recursive() )
 
-    # ATTENTION
-    # Bug actuellement (version iterateur qui renvoie toutes les solutions)
+    # pas optimise
+    # on choisit le suivant au hasard mais on l'enleve si ce n'est pas un voisin
+    # mieux vaut choisir directement parmis les voisins
 
     g = graphs.CubeGraph(k)
     vertices = g.vertices()
@@ -68,7 +67,7 @@ def find_tree_iterative(k, l):
         tree = True
         count = 0
         for x in range(k):
-            if voisin_suivant(selected[-1], x) in selected[:-1]:
+            if next_neighbor(selected[-1], x) in selected[:-1]:
                 count += 1
     
         if count != 1:
@@ -145,7 +144,7 @@ def find_tree_recursive(k, l):
         # plutot que t.is_tree()
         count = 0
         for x in range(k):
-            if voisin_suivant(last_try, x) in selected[:-1]:
+            if next_neighbor(last_try, x) in selected[:-1]:
                 count += 1
        
         if count != 1:
@@ -203,7 +202,7 @@ def find_tree_recursive(k, l):
             else: # changement
                 # print("changement\n")
                 last_last_try = selected[len_pile - 2]
-                # voisin = voisin_suivant(last_last_try, last_i)
+                # voisin = next_neighbor(last_last_try, last_i)
                 suivant = vertices[last_i]
                 selected[-1] = suivant
                 tab[-2] = tab[-2] + 1 # on incremente i

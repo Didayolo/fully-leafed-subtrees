@@ -19,11 +19,6 @@ def find_forest(k, l):
         
         if t.is_forest():
 
-            #print('Vertices : ')
-            #print(t.vertices())
-            #print('Edges : ')
-            #print(t.edges(labels=False))
-            #t.show()
             yield t
 
 def find_forest_cc(k, cc_nb):
@@ -53,7 +48,6 @@ def find_forest_n(k, l, cc_nb):
         if sg.is_forest() and (sg.connected_components_number() == cc_nb):
             
             yield sg
-from itertools import combinations
 
 # On explore l'hypercube
 # On veux toujours avoir un arbre au cours de la construction
@@ -62,7 +56,7 @@ from itertools import combinations
 
 # (iterateur ?)
 
-def afficher(g):
+def display(g):
 # fonction basique d'affichage d'un graphe
 # utile pour debugger
     print('Vertices : ')
@@ -72,7 +66,7 @@ def afficher(g):
     g.show()
 
 
-def voisin_suivant(sommet, i):
+def next_neighbor(sommet, i):
     # (000,0) -> 100    (100, 1) -> 010    (010, 2) -> 001
     return sommet[:i] + str((1 - int(sommet[i])) ) + sommet[i+1:]
     
@@ -80,9 +74,6 @@ def voisin_suivant(sommet, i):
 def find_forest_iterative(k, l):
     # version iterative
     # a commenter (meme fonctionnement que solve() )
-
-    # ATTENTION
-    # Bug actuellement (version iterateur qui renvoie toutes les solutions)
 
     g = graphs.CubeGraph(k)
     vertices = g.vertices()
@@ -99,10 +90,11 @@ def find_forest_iterative(k, l):
         forest = True
         count = 0
         for x in range(k):
-            if voisin_suivant(selected[-1], x) in selected[:-1]:
+            if next_neighbor(selected[-1], x) in selected[:-1]:
                 count += 1
     
-        if count != 1: # presence d'un cycle
+        if count > 1: # presence d'un cycle
+            # count peut etre egale a 0 puisqu'on cherche une foret
             forest = False
 
         if len(selected) == 1: ## inutile ?
@@ -112,10 +104,8 @@ def find_forest_iterative(k, l):
         # Dans la course
             if len(selected) == l: # solution trouvee
                 t = g.subgraph(selected)
-                #return t
                 yield t
                 bt = True
-                #tab[-1] += 1
 
             else: # ajout
                 i = tab[-1]
@@ -137,9 +127,8 @@ def find_forest_iterative(k, l):
                 selected = selected[:-1]
                 tab = tab[:-1]
                 if len(selected) == 1: # fin
-                    #print("Problem has no solution")
                     solution = False
-                    #return Graph()
+
                 else:
                     bt = True
                 
@@ -176,12 +165,12 @@ def find_forest_recursive(k, l):
         # plutot que t.is_tree()
         count = 0
         for x in range(k):
-            if voisin_suivant(last_try, x) in selected[:-1]:
+            if next_neighbor(last_try, x) in selected[:-1]:
                 count += 1
        
-        if count != 1:
+        if count > 1:
         # i > 1 on a un cycle
-        # i < 1 on est pas connexe
+        # i < 1 on est pas connexe (pas grave poour foret)
             forest = False
         
         if len_pile == 1: # test debug
@@ -234,7 +223,7 @@ def find_forest_recursive(k, l):
             else: # changement
                 # print("changement\n")
                 last_last_try = selected[len_pile - 2]
-                # voisin = voisin_suivant(last_last_try, last_i)
+                # voisin = next_neighbor(last_last_try, last_i)
                 suivant = vertices[last_i]
                 selected[-1] = suivant
                 tab[-2] = tab[-2] + 1 # on incremente i
