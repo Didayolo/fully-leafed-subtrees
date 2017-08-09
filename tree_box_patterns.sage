@@ -72,11 +72,11 @@ def generate_patterns(k):
     return patterns
 
 
-def selected_patterns_to_vertices(selected_patterns, k):
+def selected_patterns_to_vertices(selected_patterns, dim):
 # on part d'une liste de patterns 
 # et on renvoie l'ensemble des sommets selectionnes
     vertices = []
-    it_prefixes = product('01', repeat=(k-3)) # tkt
+    it_prefixes = product('01', repeat=(dim)) # tkt
     for p in selected_patterns:
         prefixe = ''.join(next(it_prefixes))
         vertices += [prefixe + w for w in p]
@@ -122,9 +122,10 @@ def solve_iterative(k):
 # version iterative
 # voir solve_bt
 
+    pattern_k = len(roots[0][0])
     solution = True
     
-    if k < 4:
+    if k <= pattern_k:
         print("k has to be greater than 3")
         solution = False
         #return Graph()
@@ -132,15 +133,15 @@ def solve_iterative(k):
     selected_patterns = [roots[0]] 
     bt = False
 
-    cubes = 2**(k-3)
+    cubes = 2**(k - pattern_k)
     g = graphs.CubeGraph(k)
 
-    vertices = selected_patterns_to_vertices(selected_patterns, k)
+    vertices = selected_patterns_to_vertices(selected_patterns, k - pattern_k)
     t = g.subgraph(vertices)
    
     while solution:
     
-        vertices = selected_patterns_to_vertices(selected_patterns, k)
+        vertices = selected_patterns_to_vertices(selected_patterns, k - pattern_k)
         t = g.subgraph(vertices)
             
         if t.is_tree() and (not bt): # ok
