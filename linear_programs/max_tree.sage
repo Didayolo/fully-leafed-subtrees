@@ -1,4 +1,4 @@
-load("cycle_iterator.sage")
+load("../cycle_iterator.sage")
 
 # On cherche le plus grand sous-arbre induit dans un graphe donné
 
@@ -17,7 +17,11 @@ def solve(g):
     n = g.order() # taille du graphe
     a = g.size() # nombre d'arete
     m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
-    cycles = all_cycle(g) # fonction de cycle_iterator.sage   
+    cycles_vertices = list(cycles_iterator(g))
+    cycles_edges = []
+    for c in cycles_vertices:
+        l = list_to_set(c)
+        cycles_edges.append(l)
      
     p = MixedIntegerLinearProgram()  
 
@@ -43,7 +47,7 @@ def solve(g):
     p.add_constraint(edge_sum == (p.sum(v[k] for k in vertices) - 1) )  # arbre connexe (m = n - 1) 
    
     # contraintes d'acyclicite (a ameliorer)
-    for cycle in cycles: # pour chaque cycle
+    for cycle in cycles_edges: # pour chaque cycle
         length = 0 # taille du cycle
         sum = 0 # somme des aretes selectionnees
         for edge in cycle:

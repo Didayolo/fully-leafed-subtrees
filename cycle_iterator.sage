@@ -2,6 +2,19 @@
 ####### D'après l'article : https://arxiv.org/pdf/1205.2766.pdf #######
 import numpy as np
 
+
+def list_to_set(l):
+    #Ajoutée pour les programmes linéaires
+    # Prend une liste representant un cycle et renvoie un ensemble d'ensembles
+    # Les petits ensembles representent chacun une arete
+    r"""
+        INPUT   : list representing a cycle
+        OUTPUT  : (frozen)set containing edges of the cycle list l
+        EXAMPLE : list_to_set([0,1,2]) ==> {{0,2}, {0,1}, {1,2}}
+    """
+    return frozenset([frozenset([l[i-1], l[i]]) for i in range(len(l))])
+
+
 def cycles_iterator(g):
     seen = set()
     same_cycle_different_paths = set()
@@ -61,4 +74,4 @@ def main():
     for i, c in enumerate(cycles):
         print "{} : {}".format(i+1, c)
 
-main()
+#main()

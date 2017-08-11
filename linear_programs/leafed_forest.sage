@@ -1,4 +1,4 @@
-load("cycle_iterator.sage")
+load("../cycle_iterator.sage")
 
 # On a un graphe a n sommets, et on cherche parmis les
 # sous-forets induites celle qui a le plus de feuilles
@@ -22,7 +22,11 @@ def solve(g):
     n = g.order() # taille de l'arbre
     a = g.size() # nombre d'arete
     m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
-    cycles = all_cycle(g)    
+    cycles_vertices = list(cycles_iterator(g))
+    cycles_edges = []
+    for c in cycles_vertices:
+        l = list_to_set(c)
+        cycles_edges.append(l)   
 
     p = MixedIntegerLinearProgram() # tester des solvers 
 
@@ -51,7 +55,7 @@ def solve(g):
     p.add_constraint(edge_sum == p.sum(v[i] for i in vertices) - 1)  # nb_aretes = nb_sommets - 1
 
     # contraintes acyclicite
-    for cycle in cycles: # pour chaque cycle
+    for cycle in cycles_edges: # pour chaque cycle
         length = 0 # taille du cycle
         sum = 0 # somme des aretes selectionnees
         for edge in cycle:
