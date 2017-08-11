@@ -18,24 +18,23 @@ def cycles_iterator(g):
 
     ccs = np.array(g.connected_components()) #fill the connected components list
 
-    #Edges list for each cc
-    #Peut-être mieux a faire ?
-    cc_edges = [[] * len(ccs)]
+    #Edges list for each cc : cc_edges[0] =  edges list associated to ccs[0] vertices list
+    cc_edges = [[] for i in range(len(ccs))]
     for e in g.edges():
         for i, cc in enumerate(ccs):
             if e[_sage_const_0 ] in cc:
                 cc_edges[i].append(e)
-    cc_edges = np.array(cc_edges)
 
     #For each connected component, we extract simple cycles by removing back edges
     #and listing all path from start to end of the removed edge
     for i, cc in enumerate(ccs):
-        sg = g.subgraph(edges=cc_edges[i])
+        sg = g.subgraph(edges=cc_edges[i]) #subgragh with current connected component edges only
+        #For each edge e of the current connected component
         for e in cc_edges[i]:
             if e[_sage_const_1 ] in seen: #e is a back edge
-                g.delete_edge(e)
+                #g.delete_edge(e)
                 sg.delete_edge(e)
-                cycles = np.array(sg.all_paths(e[_sage_const_0 ], e[_sage_const_1 ]))
+                cycles = sg.all_paths(e[_sage_const_0 ], e[_sage_const_1 ])
 
                 #There are duplicates for some simple cycles,
                 #there can be 2 different paths for the same cycle
@@ -47,7 +46,6 @@ def cycles_iterator(g):
             seen.add(e[_sage_const_1 ])
 
 
-
 ########## testing graphs ##########
 g = Graph()
 g.add_vertices([_sage_const_1 ,_sage_const_2 ,_sage_const_3 ,_sage_const_4 ,_sage_const_5 ,_sage_const_6 ,_sage_const_7 ,_sage_const_8 ,_sage_const_9 ])
@@ -56,11 +54,7 @@ g.add_edges([(_sage_const_1 ,_sage_const_2 ), (_sage_const_2 ,_sage_const_3 ), (
 g2 = Graph()
 g2.add_vertices(range(_sage_const_1 ,_sage_const_18 ))
 g2.add_edges([(_sage_const_1 , _sage_const_2 ),(_sage_const_1 , _sage_const_3 ),(_sage_const_2 , _sage_const_3 ),(_sage_const_3 , _sage_const_4 ),(_sage_const_4 , _sage_const_5 ),(_sage_const_4 , _sage_const_11 ),(_sage_const_5 , _sage_const_6 ),(_sage_const_5 , _sage_const_13 ),(_sage_const_5 , _sage_const_15 ),(_sage_const_6 , _sage_const_7 ),(_sage_const_7 , _sage_const_8 ),(_sage_const_8 , _sage_const_9 ),(_sage_const_9 , _sage_const_10 ),(_sage_const_10 , _sage_const_11 ),(_sage_const_12 , _sage_const_13 ),(_sage_const_12 , _sage_const_14 ),(_sage_const_13 , _sage_const_14 ),(_sage_const_15 , _sage_const_16 ),(_sage_const_15 , _sage_const_17 ),(_sage_const_16 , _sage_const_17 )])
-
-g3 = Graph()
-g3.add_vertices(range(_sage_const_1 ,_sage_const_18 ))
-g3.add_edges([(_sage_const_1 , _sage_const_2 ),(_sage_const_1 , _sage_const_3 ),(_sage_const_2 , _sage_const_3 ),(_sage_const_3 , _sage_const_4 ),(_sage_const_4 , _sage_const_5 ),(_sage_const_4 , _sage_const_11 ),(_sage_const_5 , _sage_const_6 ),(_sage_const_5 , _sage_const_13 ),(_sage_const_5 , _sage_const_15 ),(_sage_const_6 , _sage_const_7 ),(_sage_const_7 , _sage_const_8 ),(_sage_const_8 , _sage_const_9 ),(_sage_const_9 , _sage_const_10 ),(_sage_const_10 , _sage_const_11 ),(_sage_const_12 , _sage_const_13 ),(_sage_const_12 , _sage_const_14 ),(_sage_const_13 , _sage_const_14 ),(_sage_const_15 , _sage_const_16 ),(_sage_const_15 , _sage_const_17 ),(_sage_const_16 , _sage_const_17 )])
-g3.add_edges([(_sage_const_6 ,_sage_const_10 ), (_sage_const_7 ,_sage_const_10 )])
+g2.add_edges([(_sage_const_6 ,_sage_const_10 ), (_sage_const_7 ,_sage_const_10 )])
 
 g4 = graphs.CompleteGraph(_sage_const_10 )
 
@@ -68,7 +62,7 @@ g5 = graphs.PetersenGraph()
 
 
 def main():
-    cycles = cycles_iterator(g4)
+    cycles = cycles_iterator(g5)
     for i, c in enumerate(cycles):
         print "{} : {}".format(i+_sage_const_1 , c)
 
