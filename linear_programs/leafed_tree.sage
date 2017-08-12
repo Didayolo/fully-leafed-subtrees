@@ -20,11 +20,11 @@ def solve(g):
     n = g.order() # taille de l'arbre
     a = g.size() # nombre d'arete
     m = n - 1 # borne sup du degre max du graphe (a paufiner et renommer) 
-    cycles_vertices = list(cycles_iterator(g))
-    cycles_edges = []
-    for c in cycles_vertices:
-        l = list_to_set(c)
-        cycles_edges.append(l)
+    cycles_it = cycles_iterator(g)
+    cycles = []
+    for c in cycles_it:
+    	l = list_to_set(c)
+        cycles.append(l)
 
     p = MixedIntegerLinearProgram() # tester des solvers 
 
@@ -53,7 +53,7 @@ def solve(g):
     p.add_constraint(edge_sum == p.sum(v[i] for i in vertices) - 1)  # nb_aretes = nb_sommets - 1
 
     # contraintes acyclicite
-    for cycle in cycles_edges: # pour chaque cycle
+    for cycle in cycles: # pour chaque cycle
         length = 0 # taille du cycle
         sum = 0 # somme des aretes selectionnees
         for edge in cycle:
